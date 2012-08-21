@@ -1,3 +1,15 @@
 import lisp
 
-lisp.eval(('print', ('if', ('>', 1, 0), (1, 2), 'white')))
+lisp.eval( (
+
+
+
+('def', 'gt1', ('x'),
+    ('if', ('>', 1, 'x'), 'yes', 'no')
+),
+('print', ('concat', 'result: ', ('gt1', 1))),
+('print', ('concat', 'result: ', ('gt1', 2)))
+
+
+
+) )
