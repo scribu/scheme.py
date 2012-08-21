@@ -9,14 +9,15 @@ def eval(token):
         if not token:
             return token
 
-        if 'def' == token[0]:
-            return fn_def(*token[1:])
+        if str == type(token[0]):
+            if 'def' == token[0]:
+                return fn_def(*token[1:])
 
-        if token[0] in native_fn:
-            return native_fn_call(*token)
+            if token[0] in native_fn:
+                return native_fn_call(*token)
 
-        if token[0] in user_fn:
-            return user_fn_call(*token)
+            if token[0] in user_fn:
+                return user_fn_call(*token)
 
         return [eval(arg) for arg in token]
     else:
