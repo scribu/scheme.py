@@ -41,4 +41,4 @@ def native_fn_call(name, *args):
 def user_fn_call(name, *args):
     # evald_args = [eval(arg) for arg in args]
     # todo: argument binding
-    return eval(user_fn[name]['body'])[0]
+    return eval(user_fn[name]['body'])[-1]
