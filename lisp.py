@@ -3,6 +3,12 @@ from stdlib import native_fn
 def is_list(token):
     return type(token) in [list, tuple]
 
+def fn_if(cond, a, b):
+    if eval(cond):
+        return eval(a)
+
+    return eval(b)
+
 # todo: distinguish between symbols and strings
 def eval(token):
     if is_list(token):
@@ -10,6 +16,9 @@ def eval(token):
             return token
 
         if str == type(token[0]):
+            if 'if' == token[0]:
+                return fn_if(*token[1:])
+
             if 'def' == token[0]:
                 return fn_def(*token[1:])
 

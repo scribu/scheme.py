@@ -4,12 +4,12 @@ lisp.eval( (
 
 
 
-('def', 'gt1', ('x'),
-    ('print', 'crunching...'),
-    ('if', ('<', 1, 'x'), 'yes', 'no')
+('def', 'factorial', ('n'),
+    ('if', ('>=', 1, 'n'),
+        1,
+        ('*', 'n', ('factorial', ('-', 'n', 1))))
 ),
-('print', ('concat', 'result: ', ('gt1', 1))),
-('print', ('concat', 'result: ', ('gt1', 2)))
+('print', ('concat', 'result: ', ('factorial', 3))),
 
 
 

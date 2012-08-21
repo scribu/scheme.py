@@ -17,8 +17,6 @@ native_fn = {
     '/': lambda a, b: a / b,
     '%': lambda a, b: a % b,
 
-    'if': lambda cond, a, b: a if cond else b,
-
     'concat': fn_concat,
     'print': fn_print,
 }
