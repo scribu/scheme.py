@@ -36,10 +36,26 @@ def fn_def(name, args, *body):
     }
 
 def native_fn_call(name, *args):
-    evald_args = [eval(arg) for arg in args]
+    evald_args = [eval(arg) for arg in args]   # evaluate args before function body
     return native_fn[name](*evald_args)
 
+def _bind_var(name, value, token):
+    if is_list(token):
+        return [_bind_var(name, value, t) for t in token]
+
+    if token == name:
+        return value
+
+    return token
+
 def user_fn_call(name, *args):
-    # evald_args = [eval(arg) for arg in args]
-    # todo: argument binding
-    return eval(user_fn[name]['body'])[-1]
+    fn = user_fn[name]
+
+    body = fn['body']
+
+    i = 0
+    for arg_name in fn['args']:
+        body = _bind_var(arg_name, eval(args[i]), body)
+        i = i+1
+
+    return eval(body)[-1]    # return value from last statement
