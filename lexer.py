@@ -31,8 +31,7 @@ class Lexer:
 
 	for line in open(self.fname).read().splitlines():
             line_num += 1
-            if not self.tokenize(line):
-                raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
+            self.tokenize(line, line_num)
 
         if '(' == line:
             self.parens += 1
@@ -42,7 +41,7 @@ class Lexer:
 
         return self.tokens
 
-    def tokenize(self, line):
+    def tokenize(self, line, line_num):
         line = line.lstrip()
 
         if len(line) == 0:
@@ -50,13 +49,13 @@ class Lexer:
 
         r = self.find_atom(line)
         if None != r:
-            return self.tokenize(r)
+            return self.tokenize(r, line_num)
 
         r = self.find_token(line)
         if None != r:
-            return self.tokenize(r)
+            return self.tokenize(r, line_num)
 
-        return False
+        raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
 
     def find_atom(self, line):
         for atom in ['(', ')']:
