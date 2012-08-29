@@ -22,7 +22,7 @@ class Lexer:
         self.token_types = {
             'number': re.compile('([1-9]+[0-9]*)'),
             'string': re.compile('"([^"]*)"'),
-            'simbol': re.compile('([a-zA-Z<>=!?\+\-\*\/]+)'),
+            'symbol': re.compile('([a-zA-Z<>=!?\+\-\*\/]+)'),
         }
 
     def get_tokens(self):

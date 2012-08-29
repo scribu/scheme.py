@@ -38,8 +38,8 @@ user_fn = {}
 def is_list(token):
     return type(token) in [list, tuple]
 
-def is_simbol(token):
-    return hasattr(token, 'type') and 'simbol' == token.type
+def is_symbol(token):
+    return hasattr(token, 'type') and 'symbol' == token.type
 
 def native_fn_call(name, args):
     evald_args = [eval(arg) for arg in args]   # evaluate args before function body
@@ -53,7 +53,7 @@ def user_fn_def(name, args, body):
         return False
 
     for arg in args:
-        if not is_simbol(arg):
+        if not is_symbol(arg):
             raise Exception("Syntax error: '%s' is not a valid arg name (function: %s)" % (arg, name))
 
     user_fn[name] = {
@@ -95,7 +95,7 @@ def eval(lst):
     if not lst or not is_list(lst):
         return lst
 
-    if is_simbol(lst[0]):
+    if is_symbol(lst[0]):
         value = lst[0].value
 
         if 'if' == value:
