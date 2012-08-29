@@ -2,11 +2,12 @@ import re
 
 class Token:
 
-    def __init__(self, type, value):
-        if 'number' == type:
-            value = int(value)
+    def __init__(self, type_name, value):
+        if 'symbol' != type_name:
+            # not safe
+            value = __builtins__[type_name](value)
 
-        self.type = type
+        self.type = type_name
         self.value = value
 
     def __repr__(self):
@@ -20,8 +21,8 @@ class Lexer:
         self.tokens = []
 
         self.token_types = {
-            'number': re.compile('([1-9]+[0-9]*)'),
-            'string': re.compile('"([^"]*)"'),
+            'int': re.compile('([1-9]+[0-9]*)'),
+            'str': re.compile('"([^"]*)"'),
             'symbol': re.compile('([a-zA-Z<>=!?\+\-\*\/]+)'),
         }
 
