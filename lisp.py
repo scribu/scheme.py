@@ -91,7 +91,6 @@ def user_fn_call(name, args):
 # DEBUG
 # user_fn_call.calls = 0
 
-# todo: distinguish between symbols and strings
 def eval(lst):
     if not lst or not is_list(lst):
         return lst
