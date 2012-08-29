@@ -3,10 +3,6 @@ import re
 class Token:
 
     def __init__(self, type_name, value):
-        if 'symbol' != type_name:
-            # not safe
-            value = __builtins__[type_name](value)
-
         self.type = type_name
         self.value = value
 
@@ -20,11 +16,12 @@ class Lexer:
 
         self.tokens = []
 
-        self.token_types = {
-            'int': re.compile('([1-9]+[0-9]*)'),
-            'str': re.compile('"([^"]*)"'),
-            'symbol': re.compile('([a-zA-Z<>=!?\+\-\*\/]+)'),
-        }
+        self.token_types = (
+            ('float', float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
+            ('int', int, re.compile('([1-9]+[0-9]*)')),
+            ('str', str, re.compile('"([^"]*)"')),
+            ('symbol', None, re.compile('([a-zA-Z<>=!?\+\-\*\/]+)'))
+        )
 
     def get_tokens(self):
 	line_num = 0
@@ -66,12 +63,16 @@ class Lexer:
         return None
 
     def find_token(self, line):
-        for type, pattern in self.token_types.items():
+        for type, cast, pattern in self.token_types:
             r = pattern.match(line);
             if not r:
                 continue
 
-            self.tokens.append(Token(type, r.group(1)))
+            value = r.group(1)
+            if cast:
+                value = cast(value)
+
+            self.tokens.append(Token(type, value))
 
             return line[len(r.group(0)):]
 
