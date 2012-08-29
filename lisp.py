@@ -39,7 +39,7 @@ def is_list(token):
     return type(token) in [list, tuple]
 
 def is_simbol(token):
-    return type(token) != list and 'simbol' == token.type
+    return hasattr(token, 'type') and 'simbol' == token.type
 
 def native_fn_call(name, args):
     evald_args = [eval(arg) for arg in args]   # evaluate args before function body
