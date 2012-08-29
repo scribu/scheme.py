@@ -1,3 +1,6 @@
+from lexer import Lexer
+from collections import defaultdict
+
 def fn_if(cond, a, b):
     if eval(cond):
         return eval(a)
@@ -9,6 +12,9 @@ def fn_print(*args):
 
 def fn_concat(*args):
     return ''.join(str(arg) for arg in args)
+
+def fn_sub(a, b):
+    return a.value - b.value
 
 native_fn = {
     '>': lambda a, b: a > b,
@@ -32,14 +38,23 @@ user_fn = {}
 def is_list(token):
     return type(token) in [list, tuple]
 
-def native_fn_call(name, *args):
-    evald_args = [eval(arg) for arg in args]   # evaluate args before function body
-    return native_fn[name](*evald_args)
+def is_simbol(token):
+    return type(token) != list and 'simbol' == token.type
 
-def user_fn_def(name, args, *body):
+def native_fn_call(name, args):
+    evald_args = [eval(arg) for arg in args]   # evaluate args before function body
+    derefd_args = [token.value if hasattr(token, 'value') else token
+            for token in evald_args]
+    return native_fn[name](*derefd_args)
+
+def user_fn_def(name, args, body):
     if name in native_fn:
         print "Error: can't redefine '%s'; native function." % name
         return False
+
+    for arg in args:
+        if not is_simbol(arg):
+            raise Exception("Syntax error: '%s' is not a valid arg name (function: %s)" % (arg, name))
 
     user_fn[name] = {
         'args': args,
@@ -50,19 +65,19 @@ def _bind_var(name, value, token):
     if is_list(token):
         return [_bind_var(name, value, t) for t in token]
 
-    if token == name:
+    if token.value == name.value:
         return value
 
     return token
 
-def user_fn_call(name, *args):
+def user_fn_call(name, args):
     fn = user_fn[name]
 
     body = fn['body']
 
     i = 0
-    for arg_name in fn['args']:
-        body = _bind_var(arg_name, eval(args[i]), body)
+    for formal_arg in fn['args']:
+        body = _bind_var(formal_arg, eval(args[i]), body)
         i += 1
 
     # # DEBUG
@@ -77,24 +92,55 @@ def user_fn_call(name, *args):
 # user_fn_call.calls = 0
 
 # todo: distinguish between symbols and strings
-def eval(token):
-    if is_list(token):
-        if not token:
-            return token
+def eval(lst):
+    if not lst or not is_list(lst):
+        return lst
 
-        if str == type(token[0]):
-            if 'if' == token[0]:
-                return fn_if(*token[1:])
+    if is_simbol(lst[0]):
+        value = lst[0].value
 
-            if 'def' == token[0]:
-                return user_fn_def(*token[1:])
+        if 'if' == value:
+            return fn_if(*lst[1:])
 
-            if token[0] in native_fn:
-                return native_fn_call(*token)
+        if 'def' == value:
+            return user_fn_def(lst[1].value, lst[2], lst[3:])
 
-            if token[0] in user_fn:
-                return user_fn_call(*token)
+        if value in native_fn:
+            return native_fn_call(value, lst[1:])
 
-        return [eval(arg) for arg in token]
-    else:
-        return token
+        if value in user_fn:
+            return user_fn_call(value, lst[1:])
+
+    return [eval(arg) for arg in lst]
+
+# transform token list into an actual tree
+def parse(tokens):
+    lists = defaultdict(list)
+
+    i = 0
+    level = 0
+
+    while i < len(tokens):
+        if '(' == tokens[i]:
+            level += 1
+        elif ')' == tokens[i]:
+            lists[level-1].append(lists[level])
+            del(lists[level])
+            level -= 1
+        else:
+            lists[level].append(tokens[i])
+
+        i += 1
+
+    if level > 0:
+        raise Exception("Unbalanced parentheses")
+
+    return lists[0]
+
+def execute(fname):
+    lexer = Lexer(fname)
+
+    tokens = lexer.get_tokens()
+    ast = parse(tokens)
+
+    return eval(ast)
