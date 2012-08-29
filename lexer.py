@@ -5,8 +5,6 @@ class Token:
     def __init__(self, type, value):
         if 'number' == type:
             value = int(value)
-        elif 'string' == type:
-            value = value.strip('"')
 
         self.type = type
         self.value = value
@@ -23,7 +21,7 @@ class Lexer:
 
         self.token_types = {
             'number': re.compile('([1-9]+[0-9]*)'),
-            'string': re.compile('("[^"]*")'),
+            'string': re.compile('"([^"]*)"'),
             'simbol': re.compile('([a-zA-Z<>=!?\+\-\*\/]+)'),
         }
 
@@ -73,10 +71,8 @@ class Lexer:
             if not r:
                 continue
 
-            simbol = r.group(1)
+            self.tokens.append(Token(type, r.group(1)))
 
-            self.tokens.append(Token(type, simbol))
-
-            return line[len(simbol):]
+            return line[len(r.group(0)):]
 
         return None
