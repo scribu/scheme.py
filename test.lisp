@@ -5,4 +5,4 @@
 
 (print (concat
 	"result: "
-	(factorial 3)))
+	(factorial 10)))
