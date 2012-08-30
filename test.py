@@ -1,3 +1,3 @@
-import lisp
+import scheme
 
-lisp.execute('test.lisp')
+scheme.execute('test.scheme')
