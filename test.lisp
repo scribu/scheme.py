@@ -11,4 +11,5 @@
 
 (print (cdr (list 1 2 3 "foo")))
 
-(print #t #f)
+(print #t #f PI)
+

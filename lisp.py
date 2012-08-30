@@ -97,29 +97,38 @@ def user_fn_call(name, args):
 # DEBUG
 # user_fn_call.calls = 0
 
-def eval(lst):
-    if not lst or not is_list(lst):
-        return lst
+def eval(thing):
+    if not thing:
+        return thing
 
-    if is_symbol(lst[0]):
-        value = lst[0].value
+    if is_list(thing):
+        if is_symbol(thing[0]):
+            value = thing[0].value
 
-        if 'if' == value:
-            return fn_if(*lst[1:])
+            if 'if' == value:
+                return fn_if(*thing[1:])
 
-        if 'define' == value:
-            return global_def(lst[1].value, lst[2])
+            if 'define' == value:
+                return global_def(thing[1].value, thing[2])
 
-        if 'lambda' == value:
-            return lambda_def(lst[1], lst[2:])
+            if 'lambda' == value:
+                return lambda_def(thing[1], thing[2:])
 
-        if value in native_fn:
-            return native_fn_call(value, lst[1:])
+            if value in native_fn:
+                return native_fn_call(value, thing[1:])
 
-        if value in user_globals:
-            return user_fn_call(value, lst[1:])
+            if value in user_globals:
+                return user_fn_call(value, thing[1:])
+        else:
+            return [eval(arg) for arg in thing]
 
-    return [eval(arg) for arg in lst]
+    if is_symbol(thing):
+        if thing.value in user_globals:
+            return user_globals[thing.value]
+        else:
+            raise Exception("'%s' is not a symbol." % thing.value)
+
+    return thing
 
 # transform token list into an actual tree
 def parse(tokens):
