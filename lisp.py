@@ -13,8 +13,8 @@ def fn_print(*args):
 def fn_concat(*args):
     return ''.join(str(arg) for arg in args)
 
-def fn_sub(a, b):
-    return a.value - b.value
+def fn_list(*args):
+    return args
 
 native_fn = {
     '>': lambda a, b: a > b,
@@ -29,6 +29,7 @@ native_fn = {
     '/': lambda a, b: a / b,
     '%': lambda a, b: a % b,
 
+    'list': fn_list,
     'concat': fn_concat,
     'print': fn_print,
 }

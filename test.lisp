@@ -6,3 +6,5 @@
 (print (concat
 	"result: "
 	(* 0.3 (factorial 10))))
+
+(print (list 1 2 3 "foo"))
