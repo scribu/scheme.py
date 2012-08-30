@@ -8,3 +8,5 @@
 	(* 0.3 (factorial 10))))
 
 (print (cons (list 1 2 3 "foo")))
+
+(print #t #f)

@@ -9,6 +9,9 @@ class Token:
     def __repr__(self):
         return str(self.value)
 
+def convert_bool(value):
+    return True if 't' == value else False
+
 class Lexer:
     
     def __init__(self, fname):
@@ -17,6 +20,7 @@ class Lexer:
         self.tokens = []
 
         self.token_types = (
+            ('bool', convert_bool, re.compile('#([tf])')),
             ('float', float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
             ('int', int, re.compile('([1-9]+[0-9]*)')),
             ('str', str, re.compile('"([^"]*)"')),
