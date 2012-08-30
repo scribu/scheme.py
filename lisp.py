@@ -30,6 +30,9 @@ native_fn = {
     '%': lambda a, b: a % b,
 
     'list': fn_list,
+    'car': lambda a: a[0],
+    'cons': lambda a: a[1:],
+
     'concat': fn_concat,
     'print': fn_print,
 }
