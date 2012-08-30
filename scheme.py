@@ -127,7 +127,7 @@ def eval(thing):
         if thing.value in user_globals:
             return user_globals[thing.value]
         else:
-            raise Exception("'%s' is not a symbol." % thing.value)
+            raise Exception("Unbound variable: '%s'." % thing.value)
 
     return thing
 
