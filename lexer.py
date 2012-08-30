@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 class Token:
 
@@ -27,18 +28,36 @@ class Lexer:
             ('symbol', None, re.compile('([^\(\)\'"\s]+)'))
         )
 
+    def get_ast(self, tokens):
+        # transform token list into an actual tree
+        lists = defaultdict(list)
+
+        i = 0
+        level = 0
+
+        while i < len(tokens):
+            if '(' == tokens[i]:
+                level += 1
+            elif ')' == tokens[i]:
+                lists[level-1].append(lists[level])
+                del(lists[level])
+                level -= 1
+            else:
+                lists[level].append(tokens[i])
+
+            i += 1
+
+        if level > 0:
+            raise Exception("Unbalanced parentheses")
+
+        return lists[0]
+
     def get_tokens(self):
 	line_num = 0
 
 	for line in open(self.fname).read().splitlines():
             line_num += 1
             self.tokenize(line, line_num)
-
-        if '(' == line:
-            self.parens += 1
-
-        if ')' == line:
-            self.parens -= 1
 
         return self.tokens
 

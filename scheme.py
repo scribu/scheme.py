@@ -1,5 +1,4 @@
 from lexer import Lexer, Token
-from collections import defaultdict
 
 def fn_if(cond, a, b):
     if eval(cond):
@@ -131,34 +130,9 @@ def eval(thing):
 
     return thing
 
-# transform token list into an actual tree
-def parse(tokens):
-    lists = defaultdict(list)
-
-    i = 0
-    level = 0
-
-    while i < len(tokens):
-        if '(' == tokens[i]:
-            level += 1
-        elif ')' == tokens[i]:
-            lists[level-1].append(lists[level])
-            del(lists[level])
-            level -= 1
-        else:
-            lists[level].append(tokens[i])
-
-        i += 1
-
-    if level > 0:
-        raise Exception("Unbalanced parentheses")
-
-    return lists[0]
-
 def execute(fname):
     lexer = Lexer(fname)
 
-    tokens = lexer.get_tokens()
-    ast = parse(tokens)
+    ast = lexer.get_ast(lexer.get_tokens())
 
     return eval(ast)
