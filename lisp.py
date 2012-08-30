@@ -1,4 +1,4 @@
-from lexer import Lexer
+from lexer import Lexer, Token
 from collections import defaultdict
 
 def fn_if(cond, a, b):
@@ -37,7 +37,7 @@ native_fn = {
     'print': fn_print,
 }
 
-user_fn = {}
+user_globals = {}
 
 def is_list(token):
     return type(token) in [list, tuple]
@@ -51,19 +51,18 @@ def native_fn_call(name, args):
             for token in evald_args]
     return native_fn[name](*derefd_args)
 
-def user_fn_def(name, args, body):
-    if name in native_fn:
-        print "Error: can't redefine '%s'; native function." % name
-        return False
+def global_def(name, value):
+    user_globals[name] = eval(value)
 
+def lambda_def(args, body):
     for arg in args:
         if not is_symbol(arg):
-            raise Exception("Syntax error: '%s' is not a valid arg name (function: %s)" % (arg, name))
+            raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
 
-    user_fn[name] = {
+    return Token('lambda', {
         'args': args,
         'body': body
-    }
+    })
 
 def _bind_var(name, value, token):
     if is_list(token):
@@ -75,12 +74,15 @@ def _bind_var(name, value, token):
     return token
 
 def user_fn_call(name, args):
-    fn = user_fn[name]
+    fn = user_globals[name]
 
-    body = fn['body']
+    if fn.type is not 'lambda':
+        raise Exception("'%s' is not callable" % name)
+
+    body = fn.value['body']
 
     i = 0
-    for formal_arg in fn['args']:
+    for formal_arg in fn.value['args']:
         body = _bind_var(formal_arg, eval(args[i]), body)
         i += 1
 
@@ -105,13 +107,16 @@ def eval(lst):
         if 'if' == value:
             return fn_if(*lst[1:])
 
-        if 'def' == value:
-            return user_fn_def(lst[1].value, lst[2], lst[3:])
+        if 'define' == value:
+            return global_def(lst[1].value, lst[2])
+
+        if 'lambda' == value:
+            return lambda_def(lst[1], lst[2:])
 
         if value in native_fn:
             return native_fn_call(value, lst[1:])
 
-        if value in user_fn:
+        if value in user_globals:
             return user_fn_call(value, lst[1:])
 
     return [eval(arg) for arg in lst]
