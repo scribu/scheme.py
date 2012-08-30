@@ -1,4 +1,4 @@
-(define PI 3.41)
+(define PI2 3.41)
 
 (define factorial (lambda (n)
     (if (>= 1 n)
@@ -11,5 +11,4 @@
 
 (print (cdr (list 1 2 3 "foo")))
 
-(print #t #f PI)
-
+(print #t #f PI2)

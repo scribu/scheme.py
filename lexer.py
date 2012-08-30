@@ -24,7 +24,7 @@ class Lexer:
             ('float', float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
             ('int', int, re.compile('([1-9]+[0-9]*)')),
             ('str', str, re.compile('"([^"]*)"')),
-            ('symbol', None, re.compile('([a-zA-Z<>=!?\+\-\*\/]+)'))
+            ('symbol', None, re.compile('([^\(\)\'"\s]+)'))
         )
 
     def get_tokens(self):
