@@ -33,8 +33,9 @@ native_fn = {
     'car': lambda a: a[0],
     'cdr': lambda a: a[1:],
 
-    'concat': fn_concat,
-    'print': fn_print,
+    'string-concatenate': fn_concat,
+
+    'display': fn_print,
 }
 
 user_globals = {}

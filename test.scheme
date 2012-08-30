@@ -5,10 +5,10 @@
         1
         (* n (factorial (- n 1))))))
 
-(print (concat
+(display (string-concatenate
 	"result: "
 	(* 0.3 (factorial 10))))
 
-(print (cdr (list 1 2 3 "foo")))
+(display (cdr (list 1 2 3 "foo")))
 
-(print #t #f PI2)
+(display #t #f PI2)
