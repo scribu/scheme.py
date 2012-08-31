@@ -96,10 +96,10 @@ class Scope:
 
             fn = self.deref(symbol)
 
-            if not isinstance(fn, Lambda):
+            try:
+                return fn.call([self.eval(arg) for arg in token[1:]])
+            except AttributeError:
                 raise Exception("'%s' is not callable" % symbol.name)
-
-            return fn.call([self.eval(arg) for arg in token[1:]])
 
         if is_symbol(token):
             return self.deref(token)
