@@ -3,11 +3,11 @@ from collections import defaultdict
 
 class Symbol:
 
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, name):
+        self.name = name
 
     def __repr__(self):
-        return str(self.value)
+        return str(self.name)
 
 def convert_bool(value):
     return True if 't' == value else False

@@ -1,6 +1,64 @@
 import sys
 from lexer import Lexer, Symbol
 
+class Scope:
+
+    def __init__(self, parent):
+        self.vars = {}
+        self.parent_scope = parent
+
+    def define(self, symbol, value):
+        self.vars[symbol.name] = self.eval(value)
+
+    def bind(self, symbol, value, token):
+        if is_list(token):
+            return [self.bind(symbol, value, t) for t in token]
+
+        if not is_symbol(token):
+            return token
+
+        if token.name == symbol.name:
+            return value
+
+        return token
+
+    def eval(self, thing):
+        if not thing:
+            return thing
+
+        if is_list(thing):
+            if is_symbol(thing[0]):
+                value = thing[0].name
+
+                if value == 'define':
+                    return self.define(*thing[1:])
+
+                if value in forms_special:
+                    return forms_special[value](self, *thing[1:])
+
+                if value in forms_native:
+                    return forms_native_call(self, value, thing[1:])
+
+                if value in self.vars:
+                    fn = self.vars[value]
+
+                    if not isinstance(fn, Lambda):
+                        raise Exception("'%s' is not callable" % value)
+
+                    return user_fn_call(self, fn, thing[1:])
+
+                raise Exception("Undefined procedure: '%s'" % value)
+            else:
+                return [self.eval(arg) for arg in thing]
+
+        if is_symbol(thing):
+            if thing.name in self.vars:
+                return self.vars[thing.name]
+            else:
+                raise Exception("Unbound variable: '%s'." % thing.name)
+
+        return thing
+
 class Lambda:
 
     def __init__(self, args, body):
@@ -10,21 +68,16 @@ class Lambda:
     def __repr__(self):
         return str(self.body)
 
-user_globals = {}
+def special_if(scope, cond, a, b):
+    if scope.eval(cond):
+        return scope.eval(a)
 
-def special_define(token, value):
-    user_globals[token.value] = eval(value)
+    return scope.eval(b)
 
-def special_if(cond, a, b):
-    if eval(cond):
-        return eval(a)
-
-    return eval(b)
-
-def special_quote(expr):
+def special_quote(scope, expr):
     return expr
 
-def special_lambda(args, *body):
+def special_lambda(scope, args, *body):
     for arg in args:
         if not is_symbol(arg):
             raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
@@ -72,37 +125,20 @@ def is_list(token):
 def is_symbol(token):
     return isinstance(token, Symbol)
 
-def forms_native_call(name, args):
-    evald_args = [eval(arg) for arg in args]   # evaluate args before function body
+def forms_native_call(scope, name, args):
+    evald_args = [scope.eval(arg) for arg in args]   # evaluate args before function body
 
     return forms_native[name](*evald_args)
 
-def _bind_var(name, value, token):
-    if is_list(token):
-        return [_bind_var(name, value, t) for t in token]
-
-    if not is_symbol(token):
-        return token
-
-    if token.value == name.value:
-        return value
-
-    return token
-
-def user_fn_call(name, args):
-    fn = user_globals[name]
-
-    if not isinstance(fn, Lambda):
-        raise Exception("'%s' is not callable" % name)
-
+def user_fn_call(scope, fn, args):
     body = fn.body
 
     i = 0
     for formal_arg in fn.args:
-        body = _bind_var(formal_arg, eval(args[i]), body)
+        body = scope.bind(formal_arg, scope.eval(args[i]), body)
         i += 1
 
-    return eval(body)[-1]    # return value from last statement
+    return scope.eval(body)[-1]    # return value from last statement
 
 def _find_forms(prefix, container):
     for key, value in globals().items():
@@ -112,41 +148,14 @@ def _find_forms(prefix, container):
 forms_special = {}
 _find_forms('special_', forms_special)
 
-def eval(thing):
-    if not thing:
-        return thing
-
-    if is_list(thing):
-        if is_symbol(thing[0]):
-            value = thing[0].value
-
-            if value in forms_special:
-                return forms_special[value](*thing[1:])
-
-            if value in forms_native:
-                return forms_native_call(value, thing[1:])
-
-            if value in user_globals:
-                return user_fn_call(value, thing[1:])
-
-            raise Exception("Undefined procedure: '%s'" % value)
-        else:
-            return [eval(arg) for arg in thing]
-
-    if is_symbol(thing):
-        if thing.value in user_globals:
-            return user_globals[thing.value]
-        else:
-            raise Exception("Unbound variable: '%s'." % thing.value)
-
-    return thing
-
 def execute(fname):
     lexer = Lexer(fname)
 
     ast = lexer.get_ast(lexer.get_tokens())
 
-    return eval(ast)
+    global_scope = Scope(None)
+
+    return global_scope.eval(ast)
 
 if __name__=="__main__":
     execute(sys.argv[1])
