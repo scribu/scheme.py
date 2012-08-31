@@ -18,7 +18,7 @@ class Lambda:
         i = 0
         for formal_arg in self.args:
             # all formal args are bound on each call
-            self.scope.define(formal_arg, args[i])
+            self.scope.bind(formal_arg, args[i])
             i += 1
 
         # return value from last statement
@@ -35,15 +35,15 @@ class Scope:
         self.vars = {}
         self.parent = parent
 
-    def define(self, symbol, value):
+    def bind(self, symbol, value):
         self.vars[symbol.name] = value
 
-    def dereference(self, symbol):
+    def deref(self, symbol):
         if symbol.name in self.vars:
             return self.vars[symbol.name]
 
         if self.parent:
-            return self.parent.dereference(symbol)
+            return self.parent.deref(symbol)
 
         raise Exception("Unbound variable: '%s'." % symbol.name)
 
@@ -61,10 +61,10 @@ class Scope:
                 return thing[1]
 
             if symbol.name == 'define':
-                return self.define(thing[1], self.eval(thing[2]))
+                return self.bind(thing[1], self.eval(thing[2]))
 
             if symbol.name == 'lambda':
-                return self.define_lambda(thing[1], thing[2:])
+                return self.make_lambda(thing[1], thing[2:])
 
             if symbol.name == 'if':
                 return self.eval_if(*thing[1:])
@@ -72,7 +72,7 @@ class Scope:
             if symbol.name in native.forms:
                 return native.call(self, symbol.name, thing[1:])
 
-            fn = self.dereference(symbol)
+            fn = self.deref(symbol)
 
             if not isinstance(fn, Lambda):
                 raise Exception("'%s' is not callable" % symbol.name)
@@ -80,7 +80,7 @@ class Scope:
             return fn.call([self.eval(arg) for arg in thing[1:]])
 
         if is_symbol(thing):
-            return self.dereference(thing)
+            return self.deref(thing)
 
         return thing
 
@@ -90,7 +90,7 @@ class Scope:
 
         return self.eval(b)
 
-    def define_lambda(self, args, body):
+    def make_lambda(self, args, body):
         for arg in args:
             if not is_symbol(arg):
                 raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
