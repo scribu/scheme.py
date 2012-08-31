@@ -26,7 +26,7 @@ def special_lambda(args, *body):
     })
 
 def fn_display(expr):
-    print expr
+    print expr,
 
 def fn_concat(args):
     return ''.join(args)
@@ -56,6 +56,7 @@ forms_native = {
     'number->string': str,
 
     'display': fn_display,
+    'newline': lambda: sys.stdout.write("\n")
 }
 
 def is_list(token):
