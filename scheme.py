@@ -20,7 +20,7 @@ class Scope:
 
     def __init__(self, parent):
         self.vars = {}
-        self.parent_scope = parent
+        self.parent = parent
 
     def define(self, symbol, value):
         self.vars[symbol.name] = value
@@ -29,8 +29,8 @@ class Scope:
         if symbol.name in self.vars:
             return self.vars[symbol.name]
 
-        if self.parent_scope:
-            return self.parent_scope.dereference(symbol)
+        if self.parent:
+            return self.parent.dereference(symbol)
 
         raise Exception("Unbound variable: '%s'." % symbol.name)
 
