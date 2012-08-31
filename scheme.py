@@ -1,5 +1,20 @@
-import sys
+import sys, native
 from lexer import Lexer, Symbol
+
+def is_list(token):
+    return type(token) in [list, tuple]
+
+def is_symbol(token):
+    return isinstance(token, Symbol)
+
+class Lambda:
+
+    def __init__(self, args, body):
+        self.args = args
+        self.body = body
+
+    def __repr__(self):
+        return str(self.body)
 
 class Scope:
 
@@ -41,8 +56,8 @@ class Scope:
             if symbol.name == 'if':
                 return self.eval_if(*thing[1:])
 
-            if symbol.name in forms_native:
-                return forms_native_call(self, symbol.name, thing[1:])
+            if symbol.name in native.forms:
+                return native.call(self, symbol.name, thing[1:])
 
             fn = self.dereference(symbol)
 
@@ -80,60 +95,6 @@ class Scope:
 
         # return value from last statement
         return fn_scope.eval(fn.body)[-1]
-
-class Lambda:
-
-    def __init__(self, args, body):
-        self.args = args
-        self.body = body
-
-    def __repr__(self):
-        return str(self.body)
-
-def fn_display(expr):
-    print expr,
-
-def fn_concat(args):
-    return ''.join(args)
-
-def fn_list(*args):
-    return args
-
-forms_native = {
-    '=': lambda a, b: a == b,
-    '>': lambda a, b: a > b,
-    '>=': lambda a, b: a >= b,
-    '<': lambda a, b: a < b,
-    '<=': lambda a, b: a <= b,
-    'eq': lambda a, b: a == b,
-
-    '+': lambda a, b: a + b,
-    '-': lambda a, b: a - b,
-    '*': lambda a, b: a * b,
-    '/': lambda a, b: a / b,
-    '%': lambda a, b: a % b,
-
-    'list': fn_list,
-    'car': lambda a: a[0],
-    'cdr': lambda a: a[1:],
-
-    'string-concatenate': fn_concat,
-
-    'number->string': str,
-
-    'display': fn_display,
-    'newline': lambda: sys.stdout.write("\n")
-}
-
-def is_list(token):
-    return type(token) in [list, tuple]
-
-def is_symbol(token):
-    return isinstance(token, Symbol)
-
-def forms_native_call(scope, name, args):
-    # evaluate args before evaluating function body
-    return forms_native[name](*(scope.eval(arg) for arg in args))
 
 def execute(fname):
     lexer = Lexer(fname)
