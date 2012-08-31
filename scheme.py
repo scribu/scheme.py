@@ -27,7 +27,7 @@ class Lambda:
             i += 1
 
         # return value from last statement
-        return self.scope.eval(self.body)[-1]
+        return [self.scope.eval(stmt) for stmt in self.body][-1]
 
 class Scope:
 
