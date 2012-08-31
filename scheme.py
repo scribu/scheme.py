@@ -128,6 +128,8 @@ def eval(thing):
 
             if value in user_globals:
                 return user_fn_call(value, thing[1:])
+
+            raise Exception("Undefined procedure: '%s'" % value)
         else:
             return [eval(arg) for arg in thing]
 
