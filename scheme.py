@@ -102,16 +102,7 @@ def user_fn_call(name, args):
         body = _bind_var(formal_arg, eval(args[i]), body)
         i += 1
 
-    # # DEBUG
-    # if user_fn_call.calls > 20:
-    #     import sys
-    #     sys.exit()
-    # user_fn_call.calls += 1
-
     return eval(body)[-1]    # return value from last statement
-
-# DEBUG
-# user_fn_call.calls = 0
 
 def _find_forms(prefix, container):
     for key, value in globals().items():
