@@ -55,10 +55,12 @@ class Scope:
 
         i = 0
         for formal_arg in fn.args:
+            # all formal args are bound on each call
             fn_scope.define(formal_arg, self.eval(args[i]))
             i += 1
 
-        return fn_scope.eval(fn.body)[-1]    # return value from last statement
+        # return value from last statement
+        return fn_scope.eval(fn.body)[-1]
 
 class Lambda:
 
@@ -127,9 +129,8 @@ def is_symbol(token):
     return isinstance(token, Symbol)
 
 def forms_native_call(scope, name, args):
-    evald_args = [scope.eval(arg) for arg in args]   # evaluate args before function body
-
-    return forms_native[name](*evald_args)
+    # evaluate args before evaluating function body
+    return forms_native[name](*(scope.eval(arg) for arg in args))
 
 def _find_forms(prefix, container):
     for key, value in globals().items():
