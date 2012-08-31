@@ -12,3 +12,5 @@
 (display (cdr (list 1 2 3 "foo")))
 
 (display #t #f PI2)
+
+(display (quote PI2))

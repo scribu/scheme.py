@@ -1,10 +1,26 @@
 from lexer import Lexer, Token
 
-def fn_if(cond, a, b):
+def special_if(cond, a, b):
     if eval(cond):
         return eval(a)
 
     return eval(b)
+
+def special_quote(expr):
+    return expr
+
+def special_define(token, value):
+    user_globals[token.value] = eval(value)
+
+def special_lambda(args, *body):
+    for arg in args:
+        if not is_symbol(arg):
+            raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
+
+    return Token('lambda', {
+        'args': args,
+        'body': body
+    })
 
 def fn_print(*args):
     print ', '.join(str(arg) for arg in args)
@@ -15,7 +31,7 @@ def fn_concat(*args):
 def fn_list(*args):
     return args
 
-native_fn = {
+forms_native = {
     '>': lambda a, b: a > b,
     '>=': lambda a, b: a >= b,
     '<': lambda a, b: a < b,
@@ -45,24 +61,11 @@ def is_list(token):
 def is_symbol(token):
     return hasattr(token, 'type') and 'symbol' == token.type
 
-def native_fn_call(name, args):
+def forms_native_call(name, args):
     evald_args = [eval(arg) for arg in args]   # evaluate args before function body
     derefd_args = [token.value if hasattr(token, 'value') else token
             for token in evald_args]
-    return native_fn[name](*derefd_args)
-
-def global_def(name, value):
-    user_globals[name] = eval(value)
-
-def lambda_def(args, body):
-    for arg in args:
-        if not is_symbol(arg):
-            raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
-
-    return Token('lambda', {
-        'args': args,
-        'body': body
-    })
+    return forms_native[name](*derefd_args)
 
 def _bind_var(name, value, token):
     if is_list(token):
@@ -97,6 +100,14 @@ def user_fn_call(name, args):
 # DEBUG
 # user_fn_call.calls = 0
 
+def _find_forms(prefix, container):
+    for key, value in globals().items():
+        if key.startswith(prefix):
+            container[ key[len(prefix):] ] = value
+
+forms_special = {}
+_find_forms('special_', forms_special)
+
 def eval(thing):
     if not thing:
         return thing
@@ -105,17 +116,11 @@ def eval(thing):
         if is_symbol(thing[0]):
             value = thing[0].value
 
-            if 'if' == value:
-                return fn_if(*thing[1:])
+            if value in forms_special:
+                return forms_special[value](*thing[1:])
 
-            if 'define' == value:
-                return global_def(thing[1].value, thing[2])
-
-            if 'lambda' == value:
-                return lambda_def(thing[1], thing[2:])
-
-            if value in native_fn:
-                return native_fn_call(value, thing[1:])
+            if value in forms_native:
+                return forms_native_call(value, thing[1:])
 
             if value in user_globals:
                 return user_fn_call(value, thing[1:])
