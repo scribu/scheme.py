@@ -1,5 +1,10 @@
 from lexer import Lexer, Token
 
+user_globals = {}
+
+def special_define(token, value):
+    user_globals[token.value] = eval(value)
+
 def special_if(cond, a, b):
     if eval(cond):
         return eval(a)
@@ -8,9 +13,6 @@ def special_if(cond, a, b):
 
 def special_quote(expr):
     return expr
-
-def special_define(token, value):
-    user_globals[token.value] = eval(value)
 
 def special_lambda(args, *body):
     for arg in args:
@@ -54,8 +56,6 @@ forms_native = {
 
     'display': fn_display,
 }
-
-user_globals = {}
 
 def is_list(token):
     return type(token) in [list, tuple]
