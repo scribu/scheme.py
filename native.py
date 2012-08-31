@@ -25,8 +25,8 @@ forms = {
 
     'list': fn_list,
 
-    'car': lambda a: a[0],
-    'cdr': lambda a: a[1:],
+    'car': lambda lst: lst[0],
+    'cdr': lambda lst: lst[1:],
     'cons': lambda x, lst: [x] + list(lst),
 
     'null?': lambda x: not x,
