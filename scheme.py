@@ -24,26 +24,26 @@ class Scope:
             return thing
 
         if is_list(thing):
-            if is_symbol(thing[0]):
-                value = thing[0].name
-
-                if value == 'define':
-                    return self.define(thing[1], self.eval(thing[2]))
-
-                if value in forms_special:
-                    return forms_special[value](self, *thing[1:])
-
-                if value in forms_native:
-                    return forms_native_call(self, value, thing[1:])
-
-                fn = self.dereference(thing[0])
-
-                if not isinstance(fn, Lambda):
-                    raise Exception("'%s' is not callable" % value)
-
-                return self.call(fn, thing[1:])
-            else:
+            if is_list(thing[0]):
                 return [self.eval(arg) for arg in thing]
+
+            symbol = thing[0]
+
+            if symbol.name == 'define':
+                return self.define(thing[1], self.eval(thing[2]))
+
+            if symbol.name in forms_special:
+                return forms_special[symbol.name](self, *thing[1:])
+
+            if symbol.name in forms_native:
+                return forms_native_call(self, symbol.name, thing[1:])
+
+            fn = self.dereference(symbol)
+
+            if not isinstance(fn, Lambda):
+                raise Exception("'%s' is not callable" % symbol.name)
+
+            return self.call(fn, thing[1:])
 
         if is_symbol(thing):
             return self.dereference(thing)
