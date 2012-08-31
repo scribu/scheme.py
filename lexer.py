@@ -22,7 +22,7 @@ class Lexer:
         self.token_types = (
             (convert_bool, re.compile('#([tf])')),
             (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
-            (int, re.compile('([1-9]+[0-9]*)')),
+            (int, re.compile('(0|[1-9]+[0-9]*)')),
             (str, re.compile('"([^"]*)"')),
             (Symbol, re.compile('([^\(\)\'"\s]+)'))
         )

@@ -1,6 +1,6 @@
 (define PI2 3.41)
 
-(display (cdr (list 1 1 2 #t #f "foo" (quote PI2) PI2)))
+(display (cdr (list 0 1 2 #t #f "foo" (quote PI2) PI2)))
 (newline)
 
 (define ! (lambda (n)
