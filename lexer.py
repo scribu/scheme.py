@@ -1,10 +1,9 @@
 import re
 from collections import defaultdict
 
-class Token:
+class Symbol:
 
-    def __init__(self, type_name, value):
-        self.type = type_name
+    def __init__(self, value):
         self.value = value
 
     def __repr__(self):
@@ -21,11 +20,11 @@ class Lexer:
         self.tokens = []
 
         self.token_types = (
-            ('bool', convert_bool, re.compile('#([tf])')),
-            ('float', float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
-            ('int', int, re.compile('([1-9]+[0-9]*)')),
-            ('str', str, re.compile('"([^"]*)"')),
-            ('symbol', None, re.compile('([^\(\)\'"\s]+)'))
+            (convert_bool, re.compile('#([tf])')),
+            (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
+            (int, re.compile('([1-9]+[0-9]*)')),
+            (str, re.compile('"([^"]*)"')),
+            (Symbol, re.compile('([^\(\)\'"\s]+)'))
         )
 
     def get_ast(self, tokens):
@@ -86,16 +85,12 @@ class Lexer:
         return None
 
     def find_token(self, line):
-        for type, cast, pattern in self.token_types:
+        for cast, pattern in self.token_types:
             r = pattern.match(line);
             if not r:
                 continue
 
-            value = r.group(1)
-            if cast:
-                value = cast(value)
-
-            self.tokens.append(Token(type, value))
+            self.tokens.append(cast(r.group(1)))
 
             return line[len(r.group(0)):]
 

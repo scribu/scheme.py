@@ -1,5 +1,14 @@
 import sys
-from lexer import Lexer, Token
+from lexer import Lexer, Symbol
+
+class Lambda:
+
+    def __init__(self, args, body):
+        self.args = args
+        self.body = body
+
+    def __repr__(self):
+        return str(self.body)
 
 user_globals = {}
 
@@ -20,10 +29,7 @@ def special_lambda(args, *body):
         if not is_symbol(arg):
             raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
 
-    return Token('lambda', {
-        'args': args,
-        'body': body
-    })
+    return Lambda(args, body)
 
 def fn_display(expr):
     print expr,
@@ -35,6 +41,7 @@ def fn_list(*args):
     return args
 
 forms_native = {
+    '=': lambda a, b: a == b,
     '>': lambda a, b: a > b,
     '>=': lambda a, b: a >= b,
     '<': lambda a, b: a < b,
@@ -63,17 +70,19 @@ def is_list(token):
     return type(token) in [list, tuple]
 
 def is_symbol(token):
-    return hasattr(token, 'type') and 'symbol' == token.type
+    return isinstance(token, Symbol)
 
 def forms_native_call(name, args):
     evald_args = [eval(arg) for arg in args]   # evaluate args before function body
-    derefd_args = [token.value if hasattr(token, 'value') else token
-            for token in evald_args]
-    return forms_native[name](*derefd_args)
+
+    return forms_native[name](*evald_args)
 
 def _bind_var(name, value, token):
     if is_list(token):
         return [_bind_var(name, value, t) for t in token]
+
+    if not is_symbol(token):
+        return token
 
     if token.value == name.value:
         return value
@@ -83,13 +92,13 @@ def _bind_var(name, value, token):
 def user_fn_call(name, args):
     fn = user_globals[name]
 
-    if fn.type is not 'lambda':
+    if not isinstance(fn, Lambda):
         raise Exception("'%s' is not callable" % name)
 
-    body = fn.value['body']
+    body = fn.body
 
     i = 0
-    for formal_arg in fn.value['args']:
+    for formal_arg in fn.args:
         body = _bind_var(formal_arg, eval(args[i]), body)
         i += 1
 
