@@ -10,17 +10,14 @@ class Scope:
     def define(self, symbol, value):
         self.vars[symbol.name] = value
 
-    def bind(self, symbol, value, token):
-        if is_list(token):
-            return [self.bind(symbol, value, t) for t in token]
+    def dereference(self, symbol):
+        if symbol.name in self.vars:
+            return self.vars[symbol.name]
 
-        if not is_symbol(token):
-            return token
+        if self.parent_scope:
+            return self.parent_scope.dereference(symbol)
 
-        if token.name == symbol.name:
-            return value
-
-        return token
+        raise Exception("Unbound variable: '%s'." % symbol.name)
 
     def eval(self, thing):
         if not thing:
@@ -39,35 +36,29 @@ class Scope:
                 if value in forms_native:
                     return forms_native_call(self, value, thing[1:])
 
-                if value in self.vars:
-                    fn = self.vars[value]
+                fn = self.dereference(thing[0])
 
-                    if not isinstance(fn, Lambda):
-                        raise Exception("'%s' is not callable" % value)
+                if not isinstance(fn, Lambda):
+                    raise Exception("'%s' is not callable" % value)
 
-                    return self.call(fn, thing[1:])
-
-                raise Exception("Undefined procedure: '%s'" % value)
+                return self.call(fn, thing[1:])
             else:
                 return [self.eval(arg) for arg in thing]
 
         if is_symbol(thing):
-            if thing.name in self.vars:
-                return self.vars[thing.name]
-            else:
-                raise Exception("Unbound variable: '%s'." % thing.name)
+            return self.dereference(thing)
 
         return thing
 
     def call(self, fn, args):
-        body = fn.body
+        fn_scope = Scope(self)
 
         i = 0
         for formal_arg in fn.args:
-            body = self.bind(formal_arg, self.eval(args[i]), body)
+            fn_scope.define(formal_arg, self.eval(args[i]))
             i += 1
 
-        return self.eval(body)[-1]    # return value from last statement
+        return fn_scope.eval(fn.body)[-1]    # return value from last statement
 
 class Lambda:
 
