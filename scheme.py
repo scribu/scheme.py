@@ -35,6 +35,12 @@ class Scope:
         self.vars = {}
         self.parent = parent
 
+    def __repr__(self):
+        vars = "\n".join('%s: %s' % (str(key), str(value))
+                for key, value in self.vars.items())
+
+        return "\n----------\n%s\n----------" % vars
+
     def bind(self, symbol, value):
         self.vars[symbol.name] = value
 
