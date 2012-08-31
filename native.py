@@ -36,5 +36,5 @@ forms = {
 }
 
 def call(scope, name, args):
-    # evaluate args before evaluating function body
-    return forms[name](*(scope.eval(arg) for arg in args))
+    evald_args = [scope.eval(arg) for arg in args]
+    return forms[name](*evald_args)
