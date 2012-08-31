@@ -81,7 +81,12 @@ class Scope:
                 return token[1]
 
             if symbol.name == 'define':
-                return self.bind(token[1], self.eval(token[2]))
+                try:
+                    value = self.eval(token[2])
+                except IndexError:
+                    value = None
+
+                return self.bind(token[1], value)
 
             if symbol.name == 'lambda':
                 return self.make_lambda(token[1], token[2:])
