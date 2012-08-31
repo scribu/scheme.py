@@ -22,11 +22,11 @@ def special_lambda(args, *body):
         'body': body
     })
 
-def fn_print(*args):
-    print ', '.join(str(arg) for arg in args)
+def fn_display(expr):
+    print expr
 
-def fn_concat(*args):
-    return ''.join(str(arg) for arg in args)
+def fn_concat(args):
+    return ''.join(args)
 
 def fn_list(*args):
     return args
@@ -50,7 +50,9 @@ forms_native = {
 
     'string-concatenate': fn_concat,
 
-    'display': fn_print,
+    'number->string': str,
+
+    'display': fn_display,
 }
 
 user_globals = {}
