@@ -24,8 +24,12 @@ forms = {
     '%': lambda a, b: a % b,
 
     'list': fn_list,
+
     'car': lambda a: a[0],
     'cdr': lambda a: a[1:],
+    'cons': lambda x, lst: [x] + list(lst),
+
+    'null?': lambda x: not x,
 
     'string-concatenate': fn_concat,
 
