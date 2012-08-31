@@ -29,11 +29,17 @@ class Scope:
 
             symbol = thing[0]
 
+            if symbol.name == 'quote':
+                return thing[1]
+
             if symbol.name == 'define':
                 return self.define(thing[1], self.eval(thing[2]))
 
-            if symbol.name in forms_special:
-                return forms_special[symbol.name](self, *thing[1:])
+            if symbol.name == 'lambda':
+                return self.eval_lambda(*thing[1:])
+
+            if symbol.name == 'if':
+                return self.eval_if(*thing[1:])
 
             if symbol.name in forms_native:
                 return forms_native_call(self, symbol.name, thing[1:])
@@ -49,6 +55,19 @@ class Scope:
             return self.dereference(thing)
 
         return thing
+
+    def eval_if(self, cond, a, b):
+        if self.eval(cond):
+            return self.eval(a)
+
+        return self.eval(b)
+
+    def eval_lambda(self, args, *body):
+        for arg in args:
+            if not is_symbol(arg):
+                raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
+
+        return Lambda(args, body)
 
     def call(self, fn, args):
         fn_scope = Scope(self)
@@ -70,22 +89,6 @@ class Lambda:
 
     def __repr__(self):
         return str(self.body)
-
-def special_if(scope, cond, a, b):
-    if scope.eval(cond):
-        return scope.eval(a)
-
-    return scope.eval(b)
-
-def special_quote(scope, expr):
-    return expr
-
-def special_lambda(scope, args, *body):
-    for arg in args:
-        if not is_symbol(arg):
-            raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
-
-    return Lambda(args, body)
 
 def fn_display(expr):
     print expr,
@@ -131,14 +134,6 @@ def is_symbol(token):
 def forms_native_call(scope, name, args):
     # evaluate args before evaluating function body
     return forms_native[name](*(scope.eval(arg) for arg in args))
-
-def _find_forms(prefix, container):
-    for key, value in globals().items():
-        if key.startswith(prefix):
-            container[ key[len(prefix):] ] = value
-
-forms_special = {}
-_find_forms('special_', forms_special)
 
 def execute(fname):
     lexer = Lexer(fname)
