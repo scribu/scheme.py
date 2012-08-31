@@ -23,6 +23,9 @@ class Lambda:
         i = 0
         for formal_arg in self.args:
             # all formal args are bound on each call
+            if len(args) <= i:
+                raise Exception("Missing parameter '%s'" % formal_arg.name)
+
             self.scope.bind(formal_arg, args[i])
             i += 1
 
