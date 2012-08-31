@@ -3,11 +3,12 @@
         1
         (* n (! (- n 1))))))
 
-(define !-it
-  (lambda (n current)
-    (if (= n 0)
-        current
-        (!-it (- n 1) (* n current)))))
+(define !-it (lambda (x)
+    (define !-internal (lambda (n current)
+        (if (= n 0)
+            current
+            (!-internal (- n 1) (* n current)))))
+    (!-internal x 1)))
 
 (display (string-concatenate (list
 	"factorial: "
@@ -16,5 +17,5 @@
 
 (display (string-concatenate (list
 	"factorial (iterative): "
-	(number->string (!-it 10 1)))))
+	(number->string (!-it 10)))))
 (newline)
