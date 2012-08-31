@@ -14,6 +14,11 @@ class Lambda:
         self.body = body
         self.scope = scope
 
+    def __repr__(self):
+        return '(lambda (%s) %s)' % (
+                ' '.join(str(arg) for arg in self.args),
+                ' '.join(str(line) for line in self.body))
+
     def call(self, args):
         i = 0
         for formal_arg in self.args:
@@ -23,11 +28,6 @@ class Lambda:
 
         # return value from last statement
         return self.scope.eval(self.body)[-1]
-
-    def __repr__(self):
-        return '(lambda (%s) %s)' % (
-                ' '.join(str(arg) for arg in self.args),
-                ' '.join(str(line) for line in self.body))
 
 class Scope:
 
@@ -47,42 +47,42 @@ class Scope:
 
         raise Exception("Unbound variable: '%s'." % symbol.name)
 
-    def eval(self, thing):
-        if not thing:
-            return thing
+    def eval(self, token):
+        if not token:
+            return token
 
-        if is_list(thing):
-            if is_list(thing[0]):
-                return [self.eval(arg) for arg in thing]
+        if is_list(token):
+            if is_list(token[0]):
+                return [self.eval(arg) for arg in token]
 
-            symbol = thing[0]
+            symbol = token[0]
 
             if symbol.name == 'quote':
-                return thing[1]
+                return token[1]
 
             if symbol.name == 'define':
-                return self.bind(thing[1], self.eval(thing[2]))
+                return self.bind(token[1], self.eval(token[2]))
 
             if symbol.name == 'lambda':
-                return self.make_lambda(thing[1], thing[2:])
+                return self.make_lambda(token[1], token[2:])
 
             if symbol.name == 'if':
-                return self.eval_if(*thing[1:])
+                return self.eval_if(*token[1:])
 
             if symbol.name in native.forms:
-                return native.call(self, symbol.name, thing[1:])
+                return native.call(self, symbol.name, token[1:])
 
             fn = self.deref(symbol)
 
             if not isinstance(fn, Lambda):
                 raise Exception("'%s' is not callable" % symbol.name)
 
-            return fn.call([self.eval(arg) for arg in thing[1:]])
+            return fn.call([self.eval(arg) for arg in token[1:]])
 
-        if is_symbol(thing):
-            return self.deref(thing)
+        if is_symbol(token):
+            return self.deref(token)
 
-        return thing
+        return token
 
     def eval_if(self, cond, a, b):
         if self.eval(cond):
