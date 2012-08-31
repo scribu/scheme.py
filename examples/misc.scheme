@@ -1,14 +1,7 @@
-(define PI2 3.41)
+(define PI 3.41)
 
-(display (cdr (list 0 1 2 #t #f "foo" (quote PI2) PI2)))
+(display (* PI 2))
 (newline)
 
-(define ! (lambda (n)
-    (if (>= 1 n)
-        1
-        (* n (! (- n 1))))))
-
-(display (string-concatenate (list
-	"factorial: "
-	(number->string (* 0.3 (! 10))))))
+(display (cdr (list 0 #t #f "foo" (quote PI) PI)))
 (newline)

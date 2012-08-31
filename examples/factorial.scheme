@@ -1,0 +1,20 @@
+(define ! (lambda (n)
+    (if (>= 1 n)
+        1
+        (* n (! (- n 1))))))
+
+(define !-it
+  (lambda (n current)
+    (if (= n 0)
+        current
+        (!-it (- n 1) (* n current)))))
+
+(display (string-concatenate (list
+	"factorial: "
+	(number->string (! 10)))))
+(newline)
+
+(display (string-concatenate (list
+	"factorial (iterative): "
+	(number->string (!-it 10 1)))))
+(newline)
