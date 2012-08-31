@@ -45,7 +45,7 @@ class Scope:
                     if not isinstance(fn, Lambda):
                         raise Exception("'%s' is not callable" % value)
 
-                    return user_fn_call(self, fn, thing[1:])
+                    return self.call(fn, thing[1:])
 
                 raise Exception("Undefined procedure: '%s'" % value)
             else:
@@ -58,6 +58,16 @@ class Scope:
                 raise Exception("Unbound variable: '%s'." % thing.name)
 
         return thing
+
+    def call(self, fn, args):
+        body = fn.body
+
+        i = 0
+        for formal_arg in fn.args:
+            body = self.bind(formal_arg, self.eval(args[i]), body)
+            i += 1
+
+        return self.eval(body)[-1]    # return value from last statement
 
 class Lambda:
 
@@ -129,16 +139,6 @@ def forms_native_call(scope, name, args):
     evald_args = [scope.eval(arg) for arg in args]   # evaluate args before function body
 
     return forms_native[name](*evald_args)
-
-def user_fn_call(scope, fn, args):
-    body = fn.body
-
-    i = 0
-    for formal_arg in fn.args:
-        body = scope.bind(formal_arg, scope.eval(args[i]), body)
-        i += 1
-
-    return scope.eval(body)[-1]    # return value from last statement
 
 def _find_forms(prefix, container):
     for key, value in globals().items():
