@@ -88,6 +88,12 @@ class Scope:
 
                 return self.bind(token[1], value)
 
+            if symbol.name == 'set!':
+                if token[1].name not in self.vars:
+                    raise Exception("Unboud variable: '%s'" % token[1].name)
+
+                return self.bind(token[1], self.eval(token[2]))
+
             if symbol.name == 'lambda':
                 return self.make_lambda(token[1], token[2:])
 
