@@ -1,3 +1,4 @@
+import sys
 from lexer import Lexer, Token
 
 user_globals = {}
@@ -143,3 +144,6 @@ def execute(fname):
     ast = lexer.get_ast(lexer.get_tokens())
 
     return eval(ast)
+
+if __name__=="__main__":
+    execute(sys.argv[1])
