@@ -9,9 +9,20 @@ def is_symbol(token):
 
 class Lambda:
 
-    def __init__(self, args, body):
+    def __init__(self, args, body, scope):
         self.args = args
         self.body = body
+        self.scope = scope
+
+    def call(self, args):
+        i = 0
+        for formal_arg in self.args:
+            # all formal args are bound on each call
+            self.scope.define(formal_arg, args[i])
+            i += 1
+
+        # return value from last statement
+        return self.scope.eval(self.body)[-1]
 
     def __repr__(self):
         return str(self.body)
@@ -51,7 +62,7 @@ class Scope:
                 return self.define(thing[1], self.eval(thing[2]))
 
             if symbol.name == 'lambda':
-                return self.eval_lambda(*thing[1:])
+                return self.define_lambda(*thing[1:])
 
             if symbol.name == 'if':
                 return self.eval_if(*thing[1:])
@@ -64,7 +75,7 @@ class Scope:
             if not isinstance(fn, Lambda):
                 raise Exception("'%s' is not callable" % symbol.name)
 
-            return self.call(fn, thing[1:])
+            return fn.call([self.eval(arg) for arg in thing[1:]])
 
         if is_symbol(thing):
             return self.dereference(thing)
@@ -77,24 +88,12 @@ class Scope:
 
         return self.eval(b)
 
-    def eval_lambda(self, args, *body):
+    def define_lambda(self, args, *body):
         for arg in args:
             if not is_symbol(arg):
                 raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
 
-        return Lambda(args, body)
-
-    def call(self, fn, args):
-        fn_scope = Scope(self)
-
-        i = 0
-        for formal_arg in fn.args:
-            # all formal args are bound on each call
-            fn_scope.define(formal_arg, self.eval(args[i]))
-            i += 1
-
-        # return value from last statement
-        return fn_scope.eval(fn.body)[-1]
+        return Lambda(args, body, self)
 
 def execute(fname):
     lexer = Lexer(fname)
