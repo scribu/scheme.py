@@ -8,7 +8,7 @@ class Scope:
         self.parent_scope = parent
 
     def define(self, symbol, value):
-        self.vars[symbol.name] = self.eval(value)
+        self.vars[symbol.name] = value
 
     def bind(self, symbol, value, token):
         if is_list(token):
@@ -31,7 +31,7 @@ class Scope:
                 value = thing[0].name
 
                 if value == 'define':
-                    return self.define(*thing[1:])
+                    return self.define(thing[1], self.eval(thing[2]))
 
                 if value in forms_special:
                     return forms_special[value](self, *thing[1:])
