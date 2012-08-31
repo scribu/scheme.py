@@ -68,10 +68,10 @@ class Scope:
         raise Exception("Unbound variable: '%s'." % symbol.name)
 
     def eval(self, token):
-        if not token:
-            return token
-
         if is_list(token):
+            if not len(token):
+                return token
+
             if is_list(token[0]):
                 return [self.eval(arg) for arg in token]
 
@@ -90,7 +90,7 @@ class Scope:
 
             if symbol.name == 'set!':
                 if token[1].name not in self.vars:
-                    raise Exception("Unboud variable: '%s'" % token[1].name)
+                    raise Exception("Unbound variable: '%s'" % token[1].name)
 
                 return self.bind(token[1], self.eval(token[2]))
 
