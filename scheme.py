@@ -32,6 +32,17 @@ class Lambda:
         # return value from last statement
         return [self.scope.eval(stmt) for stmt in self.body][-1]
 
+class NativeLambda(Lambda):
+
+    def __init__(self, body):
+        self.body = body
+
+    def __repr__(self):
+        return '<native-code>'
+
+    def call(self, args):
+        return self.body(*args)
+
 class Scope:
 
     def __init__(self, parent):
@@ -78,9 +89,6 @@ class Scope:
             if symbol.name == 'if':
                 return self.eval_if(*token[1:])
 
-            if symbol.name in native.forms:
-                return native.call(self, symbol.name, token[1:])
-
             fn = self.deref(symbol)
 
             if not isinstance(fn, Lambda):
@@ -106,14 +114,20 @@ class Scope:
 
         return Lambda(args, body, self)
 
+class GlobalScope(Scope):
+
+    def __init__(self):
+        self.parent = None
+
+        self.vars = dict( (key, NativeLambda(value))
+            for key, value in native.forms.items() )
+
 def execute(fname):
     lexer = Lexer(fname)
 
     ast = lexer.get_ast(lexer.get_tokens())
 
-    global_scope = Scope(None)
-
-    return global_scope.eval(ast)
+    return GlobalScope().eval(ast)
 
 if __name__=="__main__":
     execute(sys.argv[1])

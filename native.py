@@ -38,7 +38,3 @@ forms = {
     'display': fn_display,
     'newline': lambda: sys.stdout.write("\n")
 }
-
-def call(scope, name, args):
-    evald_args = [scope.eval(arg) for arg in args]
-    return forms[name](*evald_args)
