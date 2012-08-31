@@ -119,8 +119,8 @@ class GlobalScope(Scope):
     def __init__(self):
         self.parent = None
 
-        self.vars = dict( (key, NativeLambda(value))
-            for key, value in native.forms.items() )
+        self.vars = { key: NativeLambda(value)
+            for key, value in native.forms.items() }
 
 def execute(fname):
     lexer = Lexer(fname)
