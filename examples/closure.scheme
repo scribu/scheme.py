@@ -5,4 +5,3 @@
 
 (display (add-3 2))
 (newline)
-(display make-adder)

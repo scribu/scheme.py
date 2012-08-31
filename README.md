@@ -1,5 +1,5 @@
 ### Usage:
 
 ```bash
-python scheme.py test.scheme
+python scheme.py examples/misc.scheme
 ```
