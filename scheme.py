@@ -25,7 +25,9 @@ class Lambda:
         return self.scope.eval(self.body)[-1]
 
     def __repr__(self):
-        return str(self.body)
+        return '(lambda (%s) %s)' % (
+                ' '.join(str(arg) for arg in self.args),
+                ' '.join(str(line) for line in self.body))
 
 class Scope:
 
@@ -62,7 +64,7 @@ class Scope:
                 return self.define(thing[1], self.eval(thing[2]))
 
             if symbol.name == 'lambda':
-                return self.define_lambda(*thing[1:])
+                return self.define_lambda(thing[1], thing[2:])
 
             if symbol.name == 'if':
                 return self.eval_if(*thing[1:])
@@ -88,7 +90,7 @@ class Scope:
 
         return self.eval(b)
 
-    def define_lambda(self, args, *body):
+    def define_lambda(self, args, body):
         for arg in args:
             if not is_symbol(arg):
                 raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
