@@ -127,18 +127,18 @@ class Scope:
 
 class GlobalScope(Scope):
 
-    def __init__(self):
+    def __init__(self, global_vars):
         self.parent = None
 
         self.vars = { key: NativeLambda(value)
-            for key, value in native.forms.items() }
+            for key, value in global_vars.items() }
 
 def execute(fname):
     lexer = Lexer(fname)
 
     ast = lexer.get_ast(lexer.get_tokens())
 
-    return GlobalScope().eval(ast)
+    return GlobalScope(native.forms).eval(ast)
 
 if __name__=="__main__":
     execute(sys.argv[1])
