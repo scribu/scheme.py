@@ -1,6 +1,54 @@
 import sys, native
 from lexer import Lexer, is_list, is_symbol
 
+def fexpr_quote(scope, tokens):
+    return tokens[0]
+
+def fexpr_eval(scope, tokens):
+    arg = scope.eval(tokens[0])
+    return scope.eval(arg)
+
+def fexpr_if(scope, tokens):
+    cond, a, b = tokens
+
+    if scope.eval(cond):
+        return scope.eval(a)
+
+    return scope.eval(b)
+
+def fexpr_lambda(scope, tokens):
+    args = tokens[0]
+    body = tokens[1:]
+
+    for arg in args:
+        if not is_symbol(arg):
+            raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
+
+    return Lambda(args, body, scope)
+
+def fexpr_define(scope, tokens):
+    try:
+        value = scope.eval(tokens[1])
+    except IndexError:
+        value = None
+
+    return scope.bind(tokens[0], value)
+
+def fexpr_set(scope, tokens):
+    if tokens[0].name not in scope.vars:
+        raise Exception("Unbound variable: '%s'" % tokens[0].name)
+
+    return scope.bind(tokens[0], scope.eval(tokens[1]))
+
+fexpr = {
+    'quote': fexpr_quote,
+    'eval': fexpr_eval,
+    'if': fexpr_if,
+    'lambda': fexpr_lambda,
+    'define': fexpr_define,
+    'set!': fexpr_set
+}
+
 class Lambda:
 
     def __init__(self, args, body, scope):
@@ -71,32 +119,8 @@ class Scope:
 
             symbol = token[0]
 
-            if symbol.name == 'quote':
-                return token[1]
-
-            if symbol.name == 'eval':
-                arg = self.eval(token[1])
-                return self.eval(arg)
-
-            if symbol.name == 'define':
-                try:
-                    value = self.eval(token[2])
-                except IndexError:
-                    value = None
-
-                return self.bind(token[1], value)
-
-            if symbol.name == 'set!':
-                if token[1].name not in self.vars:
-                    raise Exception("Unbound variable: '%s'" % token[1].name)
-
-                return self.bind(token[1], self.eval(token[2]))
-
-            if symbol.name == 'lambda':
-                return self.make_lambda(token[1], token[2:])
-
-            if symbol.name == 'if':
-                return self.eval_if(*token[1:])
+            if symbol.name in fexpr:
+                return fexpr[symbol.name](self, token[1:])
 
             fn = self.deref(symbol)
 
@@ -109,19 +133,6 @@ class Scope:
             return self.deref(token)
 
         return token
-
-    def eval_if(self, cond, a, b):
-        if self.eval(cond):
-            return self.eval(a)
-
-        return self.eval(b)
-
-    def make_lambda(self, args, body):
-        for arg in args:
-            if not is_symbol(arg):
-                raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
-
-        return Lambda(args, body, self)
 
 class GlobalScope(Scope):
 
