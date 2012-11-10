@@ -1,11 +1,5 @@
 import sys, native
-from lexer import Lexer, Symbol
-
-def is_list(token):
-    return type(token) in [list, tuple]
-
-def is_symbol(token):
-    return isinstance(token, Symbol)
+from lexer import Lexer, is_list, is_symbol
 
 class Lambda:
 

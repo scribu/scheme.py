@@ -1,6 +1,12 @@
 import re
 from collections import defaultdict
 
+def is_list(token):
+    return type(token) in [list, tuple]
+
+def is_symbol(token):
+    return isinstance(token, Symbol)
+
 class Symbol:
 
     def __init__(self, name):
