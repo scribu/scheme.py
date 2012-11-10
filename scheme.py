@@ -10,8 +10,8 @@ class Lambda:
 
     def __repr__(self):
         return '(lambda (%s) %s)' % (
-                ' '.join(str(arg) for arg in self.args),
-                ' '.join(str(line) for line in self.body))
+                ' '.join(native.expr_to_str(arg) for arg in self.args),
+                ' '.join(native.expr_to_str(line) for line in self.body))
 
     def call(self, args):
         i = 0
