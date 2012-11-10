@@ -5,8 +5,7 @@ def fexpr_quote(scope, tokens):
     return tokens[0]
 
 def fexpr_eval(scope, tokens):
-    arg = scope.eval(tokens[0])
-    return scope.eval(arg)
+    return scope.eval(scope.eval(tokens[0]))
 
 def fexpr_if(scope, tokens):
     cond, a, b = tokens
