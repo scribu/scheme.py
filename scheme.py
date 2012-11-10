@@ -74,6 +74,10 @@ class Scope:
             if symbol.name == 'quote':
                 return token[1]
 
+            if symbol.name == 'eval':
+                arg = self.eval(token[1])
+                return self.eval(arg)
+
             if symbol.name == 'define':
                 try:
                     value = self.eval(token[2])
