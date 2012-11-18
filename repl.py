@@ -19,6 +19,11 @@ def start():
     while True:
         try:
             line = raw_input("scheme> ")
+            line = line.strip()
+
+            if not line:
+                continue
+
             line = '(display %s)' % line
 
             try:
