@@ -31,8 +31,11 @@ builtins = {
     'cons': lambda x, lst: [x] + list(lst),
 
     'null?': lambda x: not x,
+    'boolean?': lambda x: bool == type(x),
+    'string?': lambda x: str == type(x),
     'list?': is_list,
     'symbol?': is_symbol,
+    'procedure?': lambda x: isinstance(x, Lambda),
 
     'string-concatenate': fn_concat,
 
