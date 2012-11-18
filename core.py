@@ -19,12 +19,16 @@ builtins = {
     '%': lambda a, b: a % b,
 
     # comparison operators
-    '=': lambda a, b: a == b,
+    '=': lambda a, b: float(a) == float(b),
     '>': lambda a, b: a > b,
     '>=': lambda a, b: a >= b,
     '<': lambda a, b: a < b,
     '<=': lambda a, b: a <= b,
-    'eq': lambda a, b: a == b,
+
+    # equivalence predicates
+    'eq?': lambda a, b: a is b,
+    'eqv?': lambda a, b: a is b,
+    'equal?': lambda a, b: a == b,
 
     # type predicates
     'null?': lambda x: not x,
