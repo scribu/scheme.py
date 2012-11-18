@@ -1,5 +1,5 @@
 import sys
-from lexer import is_list, Symbol
+from lexer import is_list, is_symbol, Symbol
 
 def expr_to_str(expr):
     if is_list(expr):
@@ -37,6 +37,8 @@ forms = {
     'cons': lambda x, lst: [x] + list(lst),
 
     'null?': lambda x: not x,
+    'list?': is_list,
+    'symbol?': is_symbol,
 
     'string-concatenate': fn_concat,
 
