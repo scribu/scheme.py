@@ -4,6 +4,18 @@ import readline
 def start():
     scope = core.GlobalScope()
 
+    def completer(text, state):
+        text = text.lstrip('(')
+        options = [i for i in scope.vars.keys() if i.startswith(text)]
+        if state < len(options):
+            return options[state]
+        else:
+            return None
+
+    readline.parse_and_bind("tab: complete")
+    readline.set_completer_delims(' ')
+    readline.set_completer(completer)
+
     while True:
         try:
             line = raw_input("scheme> ")
