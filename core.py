@@ -1,11 +1,5 @@
 import sys
-from lexer import is_list, is_symbol, Symbol
-
-def expr_to_str(expr):
-    if is_list(expr):
-        return '(' + ' '.join(expr_to_str(token) for token in expr) + ')'
-
-    return str(expr)
+from lexer import Symbol, is_list, is_symbol, expr_to_str
 
 def fn_display(expr):
     print expr_to_str(expr),

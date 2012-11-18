@@ -110,3 +110,10 @@ def tokenize_file(fname):
             raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
 
     return tokens
+
+def expr_to_str(expr):
+    if is_list(expr):
+        return '(' + ' '.join(expr_to_str(token) for token in expr) + ')'
+
+    return str(expr)
+
