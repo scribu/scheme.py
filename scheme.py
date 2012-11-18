@@ -136,12 +136,21 @@ class GlobalScope(Scope):
         self.vars = { key: NativeLambda(value)
             for key, value in global_vars.items() }
 
-def execute(fname):
+def execute_file(fname):
     lexer = Lexer(fname)
 
     ast = lexer.get_ast(lexer.get_tokens())
 
     return GlobalScope(native.forms).eval(ast)
 
+def start_repl():
+    pass
+
+def main():
+    if len(sys.argv) > 1:
+        execute_file(sys.argv[1])
+    else:
+        start_repl()
+
 if __name__=="__main__":
-    execute(sys.argv[1])
+    main()
