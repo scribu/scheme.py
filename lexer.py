@@ -89,7 +89,7 @@ def get_ast(tokens):
 
     return lists[0]
 
-def get_tokens(fname):
+def tokenize_file(fname):
     line_num = 0
 
     tokens = []

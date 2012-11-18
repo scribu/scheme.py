@@ -3,7 +3,7 @@ import sys
 def execute_file(fname):
     import core, lexer
 
-    ast = lexer.get_ast(lexer.get_tokens(fname))
+    ast = lexer.get_ast(lexer.tokenize_file(fname))
 
     return core.GlobalScope().eval(ast)
 
