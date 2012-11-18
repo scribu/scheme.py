@@ -4,13 +4,22 @@ import readline
 def start():
     scope = core.GlobalScope()
 
-    def completer(text, state):
-        text = text.lstrip('(')
-        options = [i for i in scope.vars.keys() if i.startswith(text)]
-        if state < len(options):
-            return options[state]
-        else:
+    def completer(input, state):
+        tokens = lexer.tokenize(input)
+
+        symbol = tokens[-1]
+
+        if not lexer.is_symbol(symbol):
             return None
+
+        options = [var for var in scope.vars.keys() if var.startswith(symbol.name)]
+
+        if state >= len(options):
+            return None
+
+        tokens[-1] = options[state]
+
+        return ''.join(tokens)
 
     readline.parse_and_bind("tab: complete")
     readline.set_completer_delims(' ')
