@@ -164,20 +164,20 @@ class Scope:
             if not len(token):
                 return token
 
-            if is_list(token[0]):
-                return [self.eval(arg) for arg in token]
+            head = token[0]
 
-            symbol = token[0]
+            if is_list(head):
+                fn = self.eval(head)
+            else:
+                if head.name in fexpr:
+                    return fexpr[head.name](self, *token[1:])
 
-            if symbol.name in fexpr:
-                return fexpr[symbol.name](self, *token[1:])
-
-            fn = self.deref(symbol)
+                fn = self.deref(head)
 
             if hasattr(fn, 'call'):
                 return fn.call([self.eval(arg) for arg in token[1:]])
             else:
-                raise Exception("'%s' is not callable" % symbol.name)
+                raise Exception("'%s' is not callable" % head.name)
 
         if is_symbol(token):
             return self.deref(token)
