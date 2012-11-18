@@ -1,8 +1,10 @@
 import core, lexer
 import readline
 
-def get_known_keys(scope):
-    return core.fexpr.keys() + scope.vars.keys()
+def get_options(scope, name):
+    known_names = core.fexpr.keys() + scope.vars.keys()
+
+    return [var for var in known_names if var.startswith(name)]
 
 def start():
     scope = core.GlobalScope()
@@ -15,7 +17,7 @@ def start():
         if not lexer.is_symbol(symbol):
             return None
 
-        options = [var for var in get_known_keys(scope) if var.startswith(symbol.name)]
+        options = get_options(scope, symbol.name)
 
         if state >= len(options):
             return None
