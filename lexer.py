@@ -1,12 +1,6 @@
 import re
 from collections import defaultdict
 
-def is_list(token):
-    return type(token) in [list, tuple]
-
-def is_symbol(token):
-    return isinstance(token, Symbol)
-
 class Symbol:
 
     def __init__(self, name):
@@ -15,11 +9,17 @@ class Symbol:
     def __repr__(self):
         return str(self.name)
 
+def is_symbol(token):
+    return isinstance(token, Symbol)
+
+def is_list(token):
+    return type(token) in [list, tuple]
+
 def convert_bool(value):
-    return True if 't' == value else False
+    return True if '#t' == value else False
 
 token_types = (
-    (convert_bool, re.compile('#([tf])')),
+    (convert_bool, re.compile('(#[tf])')),
     (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
     (int, re.compile('(0|[1-9]+[0-9]*)')),
     (str, re.compile('"([^"]*)"')),
