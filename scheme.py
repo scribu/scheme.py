@@ -1,12 +1,9 @@
 import sys
 
 def execute_file(fname):
-    import core
-    from lexer import Lexer
+    import core, lexer
 
-    lexer = Lexer(fname)
-
-    ast = lexer.get_ast(lexer.get_tokens())
+    ast = lexer.get_ast(lexer.get_tokens(fname))
 
     return core.GlobalScope().eval(ast)
 
