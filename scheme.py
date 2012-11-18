@@ -5,7 +5,7 @@ def execute_file(fname):
 
     ast = lexer.get_ast(lexer.tokenize_file(fname))
 
-    return core.GlobalScope().eval(ast)
+    core.GlobalScope().eval(ast)
 
 def main():
     if len(sys.argv) > 1:
