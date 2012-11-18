@@ -32,18 +32,14 @@ def start():
 
     while True:
         try:
-            line = raw_input("scheme> ")
-            line = line.strip()
+            line = raw_input("scheme> ").strip()
 
             if not line:
                 continue
 
-            line = '(display %s)' % line
-
             try:
                 ast = lexer.get_ast(lexer.tokenize(line))
-                scope.eval(ast)
-                print
+                print scope.eval(ast[0])
             except Exception as e:
                 print e
         except EOFError:
