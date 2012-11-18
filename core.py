@@ -1,5 +1,54 @@
-import native
-from lexer import is_list, is_symbol
+import sys
+from lexer import is_list, is_symbol, Symbol
+
+def expr_to_str(expr):
+    if is_list(expr):
+        return '(' + ' '.join(expr_to_str(token) for token in expr) + ')'
+
+    return str(expr)
+
+def fn_display(expr):
+    print expr_to_str(expr),
+
+def fn_concat(args):
+    return ''.join(args)
+
+def fn_list(*args):
+    return args
+
+builtins = {
+    '=': lambda a, b: a == b,
+    '>': lambda a, b: a > b,
+    '>=': lambda a, b: a >= b,
+    '<': lambda a, b: a < b,
+    '<=': lambda a, b: a <= b,
+    'eq': lambda a, b: a == b,
+
+    '+': lambda a, b: a + b,
+    '-': lambda a, b: a - b,
+    '*': lambda a, b: a * b,
+    '/': lambda a, b: a / b,
+    '%': lambda a, b: a % b,
+
+    'list': fn_list,
+
+    'car': lambda lst: lst[0],
+    'cdr': lambda lst: lst[1:],
+    'cons': lambda x, lst: [x] + list(lst),
+
+    'null?': lambda x: not x,
+    'list?': is_list,
+    'symbol?': is_symbol,
+
+    'string-concatenate': fn_concat,
+
+    'number->string': str,
+    'symbol->string': lambda symbol: symbol.name,
+    'string->symbol': lambda name: Symbol(name),
+
+    'display': fn_display,
+    'newline': lambda: sys.stdout.write("\n")
+}
 
 def fexpr_quote(scope, expr):
     return expr
@@ -52,8 +101,8 @@ class Lambda:
 
     def __repr__(self):
         return '(lambda (%s) %s)' % (
-                ' '.join(native.expr_to_str(arg) for arg in self.args),
-                ' '.join(native.expr_to_str(line) for line in self.body))
+                ' '.join(expr_to_str(arg) for arg in self.args),
+                ' '.join(expr_to_str(line) for line in self.body))
 
     def call(self, args):
         i = 0
@@ -134,5 +183,5 @@ class GlobalScope(Scope):
         self.parent = None
 
         self.vars = { key: NativeLambda(value)
-            for key, value in native.forms.items() }
+            for key, value in builtins.items() }
 
