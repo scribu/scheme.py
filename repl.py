@@ -1,4 +1,5 @@
 import core, lexer
+import readline
 
 def start():
     scope = core.GlobalScope()
