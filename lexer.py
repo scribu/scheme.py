@@ -46,7 +46,7 @@ def find_token(line, tokens):
 
     return None
 
-def tokenize(line, line_num, tokens):
+def tokenize(line, tokens):
     line = line.lstrip()
 
     if len(line) == 0:
@@ -54,13 +54,13 @@ def tokenize(line, line_num, tokens):
 
     r = find_atom(line, tokens)
     if None != r:
-        return tokenize(r, line_num, tokens)
+        return tokenize(r, tokens)
 
     r = find_token(line, tokens)
     if None != r:
-        return tokenize(r, line_num, tokens)
+        return tokenize(r, tokens)
 
-    raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
+    raise Exception("Failed tokenizing: %s" % line)
 
 def get_ast(tokens):
     """
@@ -96,6 +96,10 @@ def tokenize_file(fname):
 
     for line in open(fname).read().splitlines():
         line_num += 1
-        tokenize(line, line_num, tokens)
+
+        try:
+            tokenize(line, tokens)
+        except:
+            raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
 
     return tokens
