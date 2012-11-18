@@ -39,7 +39,8 @@ def start():
 
             try:
                 ast = lexer.get_ast(lexer.tokenize(line))
-                print scope.eval(ast[0])
+                for expr in ast:
+                    print scope.eval(expr)
             except Exception as e:
                 print e
         except EOFError:

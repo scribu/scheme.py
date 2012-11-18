@@ -3,9 +3,12 @@ import sys
 def execute_file(fname):
     import core, lexer
 
+    scope = core.GlobalScope()
+
     ast = lexer.get_ast(lexer.tokenize_file(fname))
 
-    core.GlobalScope().eval(ast)
+    for expr in ast:
+        print scope.eval(expr)
 
 def main():
     if len(sys.argv) > 1:
