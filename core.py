@@ -118,9 +118,9 @@ class Scope:
 
             fn = self.deref(symbol)
 
-            try:
+            if hasattr(fn, 'call'):
                 return fn.call([self.eval(arg) for arg in token[1:]])
-            except AttributeError:
+            else:
                 raise Exception("'%s' is not callable" % symbol.name)
 
         if is_symbol(token):
