@@ -11,6 +11,14 @@ def fn_list(*args):
     return args
 
 builtins = {
+    # mathematical operators
+    '+': lambda a, b: a + b,
+    '-': lambda a, b: a - b,
+    '*': lambda a, b: a * b,
+    '/': lambda a, b: a / b,
+    '%': lambda a, b: a % b,
+
+    # comparison operators
     '=': lambda a, b: a == b,
     '>': lambda a, b: a > b,
     '>=': lambda a, b: a >= b,
@@ -18,18 +26,7 @@ builtins = {
     '<=': lambda a, b: a <= b,
     'eq': lambda a, b: a == b,
 
-    '+': lambda a, b: a + b,
-    '-': lambda a, b: a - b,
-    '*': lambda a, b: a * b,
-    '/': lambda a, b: a / b,
-    '%': lambda a, b: a % b,
-
-    'list': fn_list,
-
-    'car': lambda lst: lst[0],
-    'cdr': lambda lst: lst[1:],
-    'cons': lambda x, lst: [x] + list(lst),
-
+    # type predicates
     'null?': lambda x: not x,
     'boolean?': lambda x: bool == type(x),
     'string?': lambda x: str == type(x),
@@ -37,12 +34,21 @@ builtins = {
     'symbol?': is_symbol,
     'procedure?': lambda x: isinstance(x, Lambda),
 
-    'string-concatenate': fn_concat,
-
+    # converters
     'number->string': str,
     'symbol->string': lambda symbol: symbol.name,
     'string->symbol': lambda name: Symbol(name),
 
+    # list manipulation
+    'list': fn_list,
+    'car': lambda lst: lst[0],
+    'cdr': lambda lst: lst[1:],
+    'cons': lambda x, lst: [x] + list(lst),
+
+    # string manipulation
+    'string-concatenate': fn_concat,
+
+    # display procedures
     'display': fn_display,
     'newline': lambda: sys.stdout.write("\n")
 }
