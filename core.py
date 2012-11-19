@@ -114,7 +114,7 @@ class Lambda:
                 ' '.join(expr_to_str(arg) for arg in self.args),
                 ' '.join(expr_to_str(line) for line in self.body))
 
-    def call(self, args):
+    def __call__(self, args):
         i = 0
         for formal_arg in self.args:
             # all formal args are bound on each call
@@ -135,7 +135,7 @@ class NativeLambda(Lambda):
     def __repr__(self):
         return '<native-code>'
 
-    def call(self, args):
+    def __call__(self, args):
         return self.body(*args)
 
 class Scope:
@@ -172,15 +172,16 @@ class Scope:
 
             fn = self.eval(token[0])
 
+            if not hasattr(fn, '__call__'):
+                raise Exception("Uncallable expression: %s" % fn)
+
+            args = token[1:]
+
+            if is_procedure(fn):
+                return fn([self.eval(arg) for arg in args])
+
             # special form
-            if hasattr(fn, '__call__'):
-                return fn(self, *token[1:])
-
-            # built-in or regular procedure
-            if hasattr(fn, 'call'):
-                return fn.call([self.eval(arg) for arg in token[1:]])
-
-            raise Exception("Uncallable expression: %s" % fn)
+            return fn(self, *args)
 
         if is_symbol(token):
             return self.deref(token)
