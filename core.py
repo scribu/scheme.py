@@ -10,6 +10,9 @@ def fn_concat(args):
 def fn_list(*args):
     return args
 
+def is_procedure(arg):
+    return isinstance(arg, Lambda)
+
 builtins = {
     # mathematical operators
     '+': lambda a, b: a + b,
@@ -36,7 +39,7 @@ builtins = {
     'string?': lambda x: str == type(x),
     'list?': is_list,
     'symbol?': is_symbol,
-    'procedure?': lambda x: isinstance(x, Lambda),
+    'procedure?': is_procedure,
 
     # converters
     'number->string': str,
