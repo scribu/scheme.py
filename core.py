@@ -154,6 +154,9 @@ class Scope:
         if symbol.name in self.vars:
             return self.vars[symbol.name]
 
+        if symbol.name in fexpr:
+            return fexpr[symbol.name]
+
         if self.parent:
             return self.parent.deref(symbol)
 
@@ -164,20 +167,17 @@ class Scope:
             if not len(token):
                 return token
 
-            head = token[0]
+            fn = self.eval(token[0])
 
-            if is_list(head):
-                fn = self.eval(head)
-            else:
-                if head.name in fexpr:
-                    return fexpr[head.name](self, *token[1:])
+            # special form
+            if hasattr(fn, '__call__'):
+                return fn(self, *token[1:])
 
-                fn = self.deref(head)
-
+            # built-in or regular procedure
             if hasattr(fn, 'call'):
                 return fn.call([self.eval(arg) for arg in token[1:]])
-            else:
-                raise Exception("'%s' is not callable" % head.name)
+
+            raise Exception("Uncallable expression: %s" % fn)
 
         if is_symbol(token):
             return self.deref(token)

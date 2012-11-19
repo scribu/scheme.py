@@ -8,7 +8,7 @@ def execute_file(fname):
     ast = lexer.get_ast(lexer.tokenize_file(fname))
 
     for expr in ast:
-        print scope.eval(expr)
+        scope.eval(expr)
 
 def main():
     if len(sys.argv) > 1:
