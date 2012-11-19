@@ -35,28 +35,27 @@ def start():
     while True:
         try:
             line = raw_input("scheme> ").strip()
-
-            if not line:
-                continue
-
-            try:
-                tokens = lexer.tokenize(line)
-            except Exception as e:
-                print e
-                continue
-
-            stored_tokens += tokens
-
-            try:
-                ast = lexer.get_ast(stored_tokens)
-            except Exception:
-                continue
-
-            stored_tokens = []
-
-            for expr in ast:
-                print scope.eval(expr)
-
         except EOFError:
             print
             break
+
+        if not line:
+            continue
+
+        try:
+            tokens = lexer.tokenize(line)
+        except Exception as e:
+            print e
+            continue
+
+        stored_tokens += tokens
+
+        try:
+            ast = lexer.get_ast(stored_tokens)
+        except Exception:
+            continue
+
+        stored_tokens = []
+
+        for expr in ast:
+            print scope.eval(expr)
