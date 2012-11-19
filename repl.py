@@ -30,6 +30,8 @@ def start():
     readline.set_completer_delims(' ')
     readline.set_completer(completer)
 
+    stored_tokens = []
+
     while True:
         try:
             line = raw_input("scheme> ").strip()
@@ -38,11 +40,23 @@ def start():
                 continue
 
             try:
-                ast = lexer.get_ast(lexer.tokenize(line))
-                for expr in ast:
-                    print scope.eval(expr)
+                tokens = lexer.tokenize(line)
             except Exception as e:
                 print e
+                continue
+
+            stored_tokens += tokens
+
+            try:
+                ast = lexer.get_ast(stored_tokens)
+            except Exception:
+                continue
+
+            stored_tokens = []
+
+            for expr in ast:
+                print scope.eval(expr)
+
         except EOFError:
             print
             break
