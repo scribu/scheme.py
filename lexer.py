@@ -27,7 +27,7 @@ token_types = (
 )
 
 def find_atom(line, tokens):
-    for atom in ['(', ')']:
+    for atom in ['(', ')', "'"]:
         if line.startswith(atom):
             tokens.append(atom)
             return line[len(atom):]
@@ -92,6 +92,29 @@ def get_ast(tokens):
         i += 1
 
     return (lists[0], level)
+
+def expand_quotes(expr):
+    """
+    Converts '(1 2 3) to (quote (1 2 3))
+    """
+
+    if not is_list(expr):
+        return expr
+
+    new_expr = []
+
+    n = len(expr)
+
+    i = 0
+    while i<n:
+        if "'" == expr[i]:
+            new_expr.append([Symbol('quote'), expand_quotes(expr[i+1])])
+            i += 2
+        else:
+            new_expr.append(expand_quotes(expr[i]))
+            i += 1
+
+    return new_expr
 
 def tokenize_file(fname):
     line_num = 0

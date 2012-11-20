@@ -5,10 +5,13 @@ def execute_file(fname):
 
     scope = core.GlobalScope()
 
-    ast, balance = lexer.get_ast(lexer.tokenize_file(fname))
+    tokens = lexer.tokenize_file(fname)
+    ast, balance = lexer.get_ast(tokens)
 
     if balance != 0:
         raise Exception("Unbalanced parentheses")
+
+    ast = lexer.expand_quotes(ast)
 
     for expr in ast:
         scope.eval(expr)
