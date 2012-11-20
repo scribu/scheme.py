@@ -1,5 +1,9 @@
 import sys
+import operator
 from lexer import Symbol, is_list, is_symbol, expr_to_str
+
+def is_procedure(arg):
+    return isinstance(arg, Lambda)
 
 def fn_display(expr):
     print expr_to_str(expr),
@@ -10,14 +14,17 @@ def fn_concat(args):
 def fn_list(*args):
     return args
 
-def is_procedure(arg):
-    return isinstance(arg, Lambda)
+def fn_add(*args):
+    return reduce(operator.add, args, 0)
+
+def fn_mul(*args):
+    return reduce(operator.mul, args, 1)
 
 builtins = {
     # mathematical operators
-    '+': lambda a, b: a + b,
+    '+': fn_add,
+    '*': fn_mul,
     '-': lambda a, b: a - b,
-    '*': lambda a, b: a * b,
     '/': lambda a, b: a / b,
     '%': lambda a, b: a % b,
 
