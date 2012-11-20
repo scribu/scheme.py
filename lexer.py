@@ -46,11 +46,6 @@ def find_token(line, tokens):
 
     return None
 
-def tokenize(line):
-    tokens = []
-    _tokenize(line, tokens)
-    return tokens
-
 def _tokenize(line, tokens):
     line = line.lstrip()
 
@@ -68,6 +63,26 @@ def _tokenize(line, tokens):
         return
 
     raise Exception("Failed tokenizing: %s" % line)
+
+def tokenize(line):
+    tokens = []
+    _tokenize(line, tokens)
+    return tokens
+
+def tokenize_file(fname):
+    line_num = 0
+
+    tokens = []
+
+    for line in open(fname).read().splitlines():
+        line_num += 1
+
+        try:
+            _tokenize(line, tokens)
+        except:
+            raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
+
+    return tokens
 
 def get_ast(tokens):
     """
@@ -115,21 +130,6 @@ def expand_quotes(expr):
             i += 1
 
     return new_expr
-
-def tokenize_file(fname):
-    line_num = 0
-
-    tokens = []
-
-    for line in open(fname).read().splitlines():
-        line_num += 1
-
-        try:
-            _tokenize(line, tokens)
-        except:
-            raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
-
-    return tokens
 
 def expr_to_str(expr):
     if is_list(expr):
