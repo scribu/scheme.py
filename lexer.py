@@ -91,10 +91,7 @@ def get_ast(tokens):
 
         i += 1
 
-    if level > 0:
-        raise Exception("Unbalanced parentheses")
-
-    return lists[0]
+    return (lists[0], level)
 
 def tokenize_file(fname):
     line_num = 0

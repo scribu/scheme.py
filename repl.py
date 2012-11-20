@@ -52,9 +52,13 @@ class REPL:
 
             stored_tokens += tokens
 
-            try:
-                ast = lexer.get_ast(stored_tokens)
-            except Exception:
+            ast, balance = lexer.get_ast(stored_tokens)
+
+            if balance > 0:
+                continue
+            elif balance < 0:
+                print 'Unexpected ")"'
+                stored_tokens = []
                 continue
 
             stored_tokens = []
