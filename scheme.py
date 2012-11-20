@@ -14,8 +14,8 @@ def main():
     if len(sys.argv) > 1:
         execute_file(sys.argv[1])
     else:
-        import repl
-        repl.start()
+        from repl import REPL
+        REPL().start()
 
 if __name__=="__main__":
     main()
