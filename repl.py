@@ -11,6 +11,22 @@ class REPL:
     def __init__(self):
         self.scope = core.GlobalScope()
 
+        self.init_history()
+        self.init_completer()
+
+    def init_history(self):
+        import os, atexit
+
+        histfile = os.path.join(os.path.expanduser("~"), ".schemepyhist")
+
+        try:
+            readline.read_history_file(histfile)
+        except IOError:
+            pass
+
+        atexit.register(readline.write_history_file, histfile)
+
+    def init_completer(self):
         readline.parse_and_bind("tab: complete")
         readline.set_completer_delims(' ')
         readline.set_completer(self.completer)
