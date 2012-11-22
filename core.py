@@ -122,17 +122,18 @@ class Lambda:
                 ' '.join(expr_to_str(line) for line in self.body))
 
     def __call__(self, args):
+        local_scope = Scope(self.scope)
+
         i = 0
         for formal_arg in self.args:
-            # all formal args are bound on each call
             if len(args) <= i:
                 raise Exception("Missing parameter '%s'" % formal_arg.name)
 
-            self.scope.bind(formal_arg, args[i])
+            local_scope.bind(formal_arg, args[i])
             i += 1
 
         # return value from last statement
-        return [self.scope.eval(stmt) for stmt in self.body][-1]
+        return [local_scope.eval(stmt) for stmt in self.body][-1]
 
 class NativeLambda(Lambda):
 
