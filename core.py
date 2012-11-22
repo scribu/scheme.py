@@ -95,8 +95,11 @@ def fexpr_define(scope, symbol, *tokens):
     return scope.bind(symbol, value)
 
 def fexpr_set(scope, symbol, value):
-    if symbol.name not in scope.vars:
-        raise Exception("Unbound variable: '%s'" % symbol.name)
+    while symbol.name not in scope.vars:
+        if not scope.parent:
+            raise Exception("Unbound variable: '%s'" % symbol.name)
+
+        scope = scope.parent
 
     return scope.bind(symbol, scope.eval(value))
 
