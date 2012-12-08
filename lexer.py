@@ -27,6 +27,9 @@ TOKEN_TYPES = (
 )
 
 def find_atom(line, tokens):
+    if line.startswith(';'):
+        return ''
+
     for atom in ['(', ')', "'"]:
         if line.startswith(atom):
             tokens.append(atom)

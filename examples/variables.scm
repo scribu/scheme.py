@@ -8,5 +8,5 @@
 
 (fn)
 
-(display var)
+(display var)  ; Expect "still in global scope"
 (newline)
