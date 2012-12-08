@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 import operator
 from lexer import Symbol, is_list, is_symbol, expr_to_str
@@ -6,7 +8,7 @@ def is_procedure(arg):
     return isinstance(arg, Lambda)
 
 def fn_display(expr):
-    print expr_to_str(expr),
+    print(expr_to_str(expr), end='')
 
 def fn_concat(args):
     return ''.join(args)

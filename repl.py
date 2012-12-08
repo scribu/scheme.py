@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import core, lexer
 import readline
 
@@ -47,7 +49,7 @@ class REPL:
             try:
                 tokens = lexer.tokenize(line)
             except Exception as e:
-                print e
+                print(e)
                 continue
 
             stored_tokens += tokens
@@ -57,7 +59,7 @@ class REPL:
             if balance > 0:
                 continue
             elif balance < 0:
-                print 'Unexpected ")"'
+                print('Unexpected ")"')
                 stored_tokens = []
                 continue
 
@@ -66,7 +68,7 @@ class REPL:
             ast = lexer.expand_quotes(ast)
 
             for expr in ast:
-                print self.scope.eval(expr)
+                print(self.scope.eval(expr))
 
     def completer(self, input, state):
         tokens = lexer.tokenize(input)
