@@ -1,5 +1,5 @@
-(define not (lambda (x)
-	(if (equal? #t x) #f #t)))
+(define (not x)
+	(if (equal? #t x) #f #t))
 
 (define PI 3.41)
 

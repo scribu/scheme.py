@@ -1,9 +1,7 @@
-(define map (lambda (fn lst)
+(define (map fn lst)
 	(if (null? lst)
 		lst
-		(cons (fn (car lst)) (map fn (cdr lst))))))
+		(cons (fn (car lst)) (map fn (cdr lst)))))
 
-(define double (lambda (x) (* 2 x)))
-
-(display (map double (list 1 2 3)))
+(display (map (lambda (x) (* 2 x)) (list 1 2 3)))
 (newline)

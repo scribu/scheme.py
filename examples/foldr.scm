@@ -1,10 +1,10 @@
-(define foldr (lambda (op init lst)
+(define (foldr op init lst)
 	(if (null? lst)
 		init
-		(op (car lst) (foldr op init (cdr lst)))))) 
+		(op (car lst) (foldr op init (cdr lst)))))
 
-(define sum (lambda (lst)
-	(foldr + 0 lst)))
+(define (sum lst)
+	(foldr + 0 lst))
 
 (display (sum (list 1 2 3)))
 (newline)

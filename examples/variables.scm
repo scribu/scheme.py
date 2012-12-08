@@ -1,10 +1,10 @@
 (define var)
 
-(define fn (lambda ()
-	(define inner (lambda ()
+(define (fn)
+	(define (inner)
 		(set! var "still in global scope")
-		0))
-	(inner)))
+		#f)
+	(inner))
 
 (fn)
 

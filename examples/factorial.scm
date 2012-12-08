@@ -1,14 +1,14 @@
-(define ! (lambda (n)
+(define (! n)
     (if (>= 1 n)
         1
-        (* n (! (- n 1))))))
+        (* n (! (- n 1)))))
 
-(define !-it (lambda (x)
-    (define !-internal (lambda (n current)
+(define (!-it x)
+    (define (!-internal n current)
         (if (= n 0)
             current
-            (!-internal (- n 1) (* n current)))))
-    (!-internal x 1)))
+            (!-internal (- n 1) (* n current))))
+    (!-internal x 1))
 
 (display (string-concatenate (list
 	"factorial: "
