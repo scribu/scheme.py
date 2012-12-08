@@ -3,11 +3,6 @@ from __future__ import print_function
 import core, lexer
 import readline
 
-def get_options(scope, name):
-    known_names = core.fexpr.keys() + scope.vars.keys()
-
-    return [var for var in known_names if var.startswith(name)]
-
 class REPL:
 
     def __init__(self):
@@ -78,7 +73,7 @@ class REPL:
         if not lexer.is_symbol(symbol):
             return None
 
-        options = get_options(self.scope, symbol.name)
+        options = self.get_options(self.scope, symbol.name)
 
         if state >= len(options):
             return None
@@ -86,4 +81,10 @@ class REPL:
         tokens[-1] = options[state]
 
         return ''.join(tokens)
+
+    @staticmethod
+    def get_options(scope, name):
+        known_names = core.fexpr.keys() + scope.vars.keys()
+
+        return [var for var in known_names if var.startswith(name)]
 
