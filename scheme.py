@@ -12,6 +12,7 @@ def execute_file(fname):
         raise Exception("Unbalanced parentheses")
 
     ast = lexer.expand_quotes(ast)
+    ast = lexer.expand_define(ast)
 
     for expr in ast:
         scope.eval(expr)

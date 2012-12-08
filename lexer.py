@@ -134,6 +134,32 @@ def expand_quotes(expr):
 
     return new_expr
 
+def expand_define(expr):
+    """
+    Converts (define (fn x) ...) to (define fn (lambda (x) ...))
+    """
+
+    if not is_list(expr):
+        return expr
+
+    new_expr = []
+
+    n = len(expr)
+
+    i = 0
+    while i<n:
+        if is_symbol(expr[i]) and expr[i].name == 'define' and is_list(expr[i+1]):
+            symbol, args = expr[i+1][0], expr[i+1][1:]
+            body = expand_define(expr[i+2:])
+
+            new_expr += [expr[i], symbol, [Symbol('lambda'), args] + body]
+            break
+        else:
+            new_expr.append(expand_define(expr[i]))
+            i += 1
+
+    return new_expr
+
 def expr_to_str(expr):
     if is_list(expr):
         return '(' + ' '.join(expr_to_str(token) for token in expr) + ')'

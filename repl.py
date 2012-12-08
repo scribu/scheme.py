@@ -61,6 +61,7 @@ class REPL:
             stored_tokens = []
 
             ast = lexer.expand_quotes(ast)
+            ast = lexer.expand_define(ast)
 
             for expr in ast:
                 print(self.scope.eval(expr))
