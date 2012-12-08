@@ -18,7 +18,7 @@ def is_list(token):
 def convert_bool(value):
     return True if '#t' == value else False
 
-token_types = (
+TOKEN_TYPES = (
     (convert_bool, re.compile('(#[tf])')),
     (float, re.compile('((0|[1-9]+[0-9]*)\.[0-9]+)')),
     (int, re.compile('(0|[1-9]+[0-9]*)')),
@@ -35,7 +35,7 @@ def find_atom(line, tokens):
     return None
 
 def find_token(line, tokens):
-    for cast, pattern in token_types:
+    for cast, pattern in TOKEN_TYPES:
         r = pattern.match(line);
         if not r:
             continue
