@@ -3,7 +3,7 @@
 Evaluate a file:
 
 ```bash
-python scheme.py examples/misc.scheme
+python scheme.py examples/misc.scm
 ```
 
 Open an interactive interpreter:
