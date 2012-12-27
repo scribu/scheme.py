@@ -164,5 +164,8 @@ def expr_to_str(expr):
     if is_list(expr):
         return '(' + ' '.join(expr_to_str(token) for token in expr) + ')'
 
+    if bool == type(expr):
+        return '#t' if expr else '#f'
+
     return str(expr)
 
