@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import sys
 import operator
+import lexer
 from lexer import Symbol, is_list, is_symbol, expr_to_str
 
 def is_procedure(arg):
@@ -77,8 +78,22 @@ functions = {
 def proc_eval(scope, expr):
     return scope.eval(expr)
 
+def proc_load(scope, fname):
+    tokens = lexer.tokenize_file(fname)
+    ast, balance = lexer.get_ast(tokens)
+
+    if balance != 0:
+        raise Exception("Unbalanced parentheses")
+
+    ast = lexer.expand_quotes(ast)
+    ast = lexer.expand_define(ast)
+
+    for expr in ast:
+        scope.eval(expr)
+
 procedures = {
     'eval': proc_eval,
+    'load': proc_load,
 }
 
 def fexpr_quote(scope, expr):

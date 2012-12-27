@@ -1,25 +1,10 @@
 import sys
 
-def execute_file(fname):
-    import core, lexer
-
-    scope = core.GlobalScope()
-
-    tokens = lexer.tokenize_file(fname)
-    ast, balance = lexer.get_ast(tokens)
-
-    if balance != 0:
-        raise Exception("Unbalanced parentheses")
-
-    ast = lexer.expand_quotes(ast)
-    ast = lexer.expand_define(ast)
-
-    for expr in ast:
-        scope.eval(expr)
-
 def main():
     if len(sys.argv) > 1:
-        execute_file(sys.argv[1])
+        import core
+
+        core.proc_load(core.GlobalScope(), sys.argv[1])
     else:
         from repl import REPL
         REPL().start()
