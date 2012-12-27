@@ -105,6 +105,9 @@ def fexpr_if(scope, cond, a, b):
 
     return scope.eval(b)
 
+def fexpr_begin(scope, *body):
+    return [scope.eval(stmt) for stmt in body][-1]
+
 def fexpr_lambda(scope, args, *body):
     for arg in args:
         if not is_symbol(arg):
@@ -133,6 +136,7 @@ def fexpr_set(scope, symbol, value):
 fexpr = {
     'quote': fexpr_quote,
     'if': fexpr_if,
+    'begin': fexpr_begin,
     'lambda': fexpr_lambda,
     'define': fexpr_define,
     'set!': fexpr_set
