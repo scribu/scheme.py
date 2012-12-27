@@ -92,7 +92,7 @@ def fexpr_lambda(scope, args, *body):
         if not is_symbol(arg):
             raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
 
-    return Lambda(args, body, scope)
+    return Lambda(body, scope, args)
 
 def fexpr_define(scope, symbol, *tokens):
     try:
@@ -122,10 +122,10 @@ fexpr = {
 
 class Lambda:
 
-    def __init__(self, args, body, scope):
-        self.args = args
+    def __init__(self, body, scope, args):
         self.body = body
         self.scope = scope
+        self.args = args
 
     def __repr__(self):
         return '(lambda (%s) %s)' % (
@@ -148,19 +148,20 @@ class Lambda:
 
 class NativeLambda(Lambda):
 
-    def __init__(self, body, name):
+    def __init__(self, body, scope, name):
         self.body = body
+        self.scope = scope
         self.name = name
 
     def __repr__(self):
         return '#<procedure %s>' % self.name
 
-    def __call__(self, args, scope):
-        return self.body(scope, *args)
+    def __call__(self, args):
+        return self.body(self.scope, *args)
 
 class ScopelessNativeLambda(NativeLambda):
 
-    def __call__(self, args, scope):
+    def __call__(self, args):
         return self.body(*args)
 
 class Scope:
@@ -203,7 +204,7 @@ class Scope:
             args = token[1:]
 
             if is_procedure(fn):
-                return fn([self.eval(arg) for arg in args], self)
+                return fn([self.eval(arg) for arg in args])
 
             # special form
             return fn(self, *args)
@@ -221,8 +222,7 @@ class GlobalScope(Scope):
         self.vars = {}
 
         for key, value in functions.items():
-            self.vars[key] = ScopelessNativeLambda(value, key)
+            self.vars[key] = ScopelessNativeLambda(value, self, key)
 
         for key, value in procedures.items():
-            self.vars[key] = NativeLambda(value, key)
-
+            self.vars[key] = NativeLambda(value, self, key)
