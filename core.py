@@ -23,7 +23,8 @@ def fn_add(*args):
 def fn_mul(*args):
     return reduce(operator.mul, args, 1)
 
-builtins = {
+# built-in procedures that don't need access to the current scope
+functions = {
     # mathematical operators
     '+': fn_add,
     '*': fn_mul,
@@ -70,11 +71,15 @@ builtins = {
     'newline': lambda: sys.stdout.write("\n")
 }
 
+def proc_eval(scope, expr):
+    return scope.eval(expr)
+
+procedures = {
+    'eval': proc_eval,
+}
+
 def fexpr_quote(scope, expr):
     return expr
-
-def fexpr_eval(scope, expr):
-    return scope.eval(scope.eval(expr))
 
 def fexpr_if(scope, cond, a, b):
     if scope.eval(cond):
@@ -106,9 +111,9 @@ def fexpr_set(scope, symbol, value):
 
     return scope.bind(symbol, scope.eval(value))
 
+# special forms that receive unevaluated args
 fexpr = {
     'quote': fexpr_quote,
-    'eval': fexpr_eval,
     'if': fexpr_if,
     'lambda': fexpr_lambda,
     'define': fexpr_define,
@@ -149,7 +154,12 @@ class NativeLambda(Lambda):
     def __repr__(self):
         return '<native-code>'
 
-    def __call__(self, args):
+    def __call__(self, args, scope):
+        return self.body(scope, *args)
+
+class ScopelessNativeLambda(NativeLambda):
+
+    def __call__(self, args, scope):
         return self.body(*args)
 
 class Scope:
@@ -192,7 +202,7 @@ class Scope:
             args = token[1:]
 
             if is_procedure(fn):
-                return fn([self.eval(arg) for arg in args])
+                return fn([self.eval(arg) for arg in args], self)
 
             # special form
             return fn(self, *args)
@@ -207,6 +217,11 @@ class GlobalScope(Scope):
     def __init__(self):
         self.parent = None
 
-        self.vars = { key: NativeLambda(value)
-            for key, value in builtins.items() }
+        self.vars = {}
+
+        for key, value in functions.items():
+            self.vars[key] = ScopelessNativeLambda(value)
+
+        for key, value in procedures.items():
+            self.vars[key] = NativeLambda(value)
 
