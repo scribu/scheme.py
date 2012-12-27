@@ -106,6 +106,7 @@ def fexpr_if(scope, cond, a, b):
     return scope.eval(b)
 
 def fexpr_begin(scope, *body):
+    # return value from last statement
     return [scope.eval(stmt) for stmt in body][-1]
 
 def fexpr_lambda(scope, args, *body):
@@ -165,8 +166,7 @@ class Lambda:
             local_scope.bind(formal_arg, args[i])
             i += 1
 
-        # return value from last statement
-        return [local_scope.eval(stmt) for stmt in self.body][-1]
+        return fexpr_begin(local_scope, *self.body)
 
 class NativeLambda(Lambda):
 
