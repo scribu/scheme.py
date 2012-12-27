@@ -205,9 +205,6 @@ class Scope:
         if symbol.name in self.vars:
             return self.vars[symbol.name]
 
-        if symbol.name in fexpr:
-            return fexpr[symbol.name]
-
         if self.parent:
             return self.parent.deref(symbol)
 
@@ -232,6 +229,9 @@ class Scope:
             return fn(self, *args)
 
         if is_symbol(token):
+            if token.name in fexpr:
+                return fexpr[token.name]
+
             return self.deref(token)
 
         return token
