@@ -52,6 +52,9 @@ functions = {
     'symbol?': is_symbol,
     'procedure?': is_procedure,
 
+    # evaluation
+    'apply': lambda fn, args: fn(args),
+
     # converters
     'number->string': str,
     'symbol->string': lambda symbol: symbol.name,
