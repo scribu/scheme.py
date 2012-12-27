@@ -148,11 +148,12 @@ class Lambda:
 
 class NativeLambda(Lambda):
 
-    def __init__(self, body):
+    def __init__(self, body, name):
         self.body = body
+        self.name = name
 
     def __repr__(self):
-        return '<native-code>'
+        return '#<procedure %s>' % self.name
 
     def __call__(self, args, scope):
         return self.body(scope, *args)
@@ -220,8 +221,8 @@ class GlobalScope(Scope):
         self.vars = {}
 
         for key, value in functions.items():
-            self.vars[key] = ScopelessNativeLambda(value)
+            self.vars[key] = ScopelessNativeLambda(value, key)
 
         for key, value in procedures.items():
-            self.vars[key] = NativeLambda(value)
+            self.vars[key] = NativeLambda(value, key)
 
