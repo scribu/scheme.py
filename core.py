@@ -224,8 +224,8 @@ class GlobalScope(Scope):
 
         self.vars = {}
 
-        for key, value in functions.items():
-            self.vars[key] = ScopelessNativeLambda(value, self, key)
+        for name, body in functions.items():
+            self.vars[name] = ScopelessNativeLambda(body, self, name)
 
-        for key, value in procedures.items():
-            self.vars[key] = NativeLambda(value, self, key)
+        for name, body in procedures.items():
+            self.vars[name] = NativeLambda(body, self, name)
