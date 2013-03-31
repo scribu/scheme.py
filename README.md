@@ -1,3 +1,7 @@
+# scheme.py
+
+Like [Heist](https://github.com/jcoglan/heist), but in Python (and missing a lot of features).
+
 ### Usage
 
 Evaluate a file:
