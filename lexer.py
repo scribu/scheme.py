@@ -1,7 +1,10 @@
+"""The lexer is the component which converts a source code string into a list of tokens and then to an AST."""
 import re
 from collections import defaultdict
 
+
 class Symbol:
+    """A symbol is a special token, representing a variable."""
 
     def __init__(self, name):
         self.name = name
@@ -9,14 +12,18 @@ class Symbol:
     def __repr__(self):
         return str(self.name)
 
+
 def is_symbol(token):
     return isinstance(token, Symbol)
+
 
 def is_list(token):
     return type(token) in [list, tuple]
 
+
 def convert_bool(value):
     return True if '#t' == value else False
+
 
 TOKEN_TYPES = (
     (convert_bool, re.compile('(#[tf])')),
@@ -26,7 +33,8 @@ TOKEN_TYPES = (
     (Symbol, re.compile('([^\(\)\'"\s]+)'))
 )
 
-def find_atom(line, tokens):
+
+def _find_atom(line, tokens):
     if line.startswith(';'):
         return ''
 
@@ -37,7 +45,8 @@ def find_atom(line, tokens):
 
     return None
 
-def find_token(line, tokens):
+
+def _find_token(line, tokens):
     for cast, pattern in TOKEN_TYPES:
         r = pattern.match(line);
         if not r:
@@ -49,28 +58,31 @@ def find_token(line, tokens):
 
     return None
 
+
 def _tokenize(line, tokens):
     line = line.lstrip()
 
     if len(line) == 0:
         return
 
-    r = find_atom(line, tokens)
+    r = _find_atom(line, tokens)
     if None != r:
         _tokenize(r, tokens)
         return
 
-    r = find_token(line, tokens)
+    r = _find_token(line, tokens)
     if None != r:
         _tokenize(r, tokens)
         return
 
     raise Exception("Failed tokenizing: %s" % line)
 
+
 def tokenize(line):
     tokens = []
     _tokenize(line, tokens)
     return tokens
+
 
 def tokenize_file(fname):
     line_num = 0
@@ -86,6 +98,7 @@ def tokenize_file(fname):
             raise Exception("Lexer error on line %d: \n%s" % (line_num, line))
 
     return tokens
+
 
 def get_ast(tokens):
     """
@@ -111,6 +124,7 @@ def get_ast(tokens):
 
     return (lists[0], level)
 
+
 def expand_quotes(expr):
     """
     Converts '(1 2 3) to (quote (1 2 3))
@@ -133,6 +147,7 @@ def expand_quotes(expr):
             i += 1
 
     return new_expr
+
 
 def expand_define(expr):
     """
@@ -160,6 +175,7 @@ def expand_define(expr):
 
     return new_expr
 
+
 def expr_to_str(expr):
     if is_list(expr):
         return '(' + ' '.join(expr_to_str(token) for token in expr) + ')'
@@ -168,4 +184,3 @@ def expr_to_str(expr):
         return '#t' if expr else '#f'
 
     return str(expr)
-

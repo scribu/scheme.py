@@ -1,3 +1,4 @@
+"""The entry point to the interpreter."""
 import sys
 
 if len(sys.argv) > 1:

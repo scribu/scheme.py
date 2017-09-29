@@ -1,3 +1,4 @@
+"""A read-eval-print-loop implementation."""
 from __future__ import print_function
 
 import core, lexer
@@ -88,4 +89,3 @@ class REPL:
         known_names = core.fexpr.keys() + scope.vars.keys()
 
         return [var for var in known_names if var.startswith(name)]
-

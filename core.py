@@ -1,3 +1,4 @@
+"""The core of the interpreter."""
 from __future__ import division
 from __future__ import print_function
 
@@ -9,20 +10,26 @@ from lexer import Symbol, is_list, is_symbol, expr_to_str
 def is_procedure(arg):
     return isinstance(arg, Lambda)
 
+
 def fn_display(expr):
     print(expr_to_str(expr), end='')
+
 
 def fn_concat(args):
     return ''.join(args)
 
+
 def fn_list(*args):
     return args
+
 
 def fn_add(*args):
     return reduce(operator.add, args, 0)
 
+
 def fn_mul(*args):
     return reduce(operator.mul, args, 1)
+
 
 # built-in procedures that don't need access to the current scope
 functions = {
@@ -76,9 +83,12 @@ functions = {
 }
 
 def proc_eval(scope, expr):
+    """A procedure for evaluating an expression."""
     return scope.eval(expr)
 
+
 def proc_load(scope, fname):
+    """A procedure for loading code from a file."""
     tokens = lexer.tokenize_file(fname)
     ast, balance = lexer.get_ast(tokens)
 
@@ -96,8 +106,10 @@ procedures = {
     'load': proc_load,
 }
 
+
 def fexpr_quote(scope, expr):
     return expr
+
 
 def fexpr_if(scope, cond, a, b):
     if scope.eval(cond):
@@ -105,9 +117,11 @@ def fexpr_if(scope, cond, a, b):
 
     return scope.eval(b)
 
+
 def fexpr_begin(scope, *body):
     # return value from last statement
     return [scope.eval(stmt) for stmt in body][-1]
+
 
 def fexpr_lambda(scope, args, *body):
     for arg in args:
@@ -115,6 +129,7 @@ def fexpr_lambda(scope, args, *body):
             raise Exception("Syntax error: '%s' is not a valid arg name" % arg)
 
     return Lambda(body, scope, args)
+
 
 def fexpr_define(scope, symbol, *tokens):
     try:
@@ -124,6 +139,7 @@ def fexpr_define(scope, symbol, *tokens):
 
     return scope.bind(symbol, value)
 
+
 def fexpr_set(scope, symbol, value):
     while symbol.name not in scope.vars:
         if not scope.parent:
@@ -132,6 +148,7 @@ def fexpr_set(scope, symbol, value):
         scope = scope.parent
 
     return scope.bind(symbol, scope.eval(value))
+
 
 # special forms that receive unevaluated args
 fexpr = {
@@ -143,7 +160,9 @@ fexpr = {
     'set!': fexpr_set
 }
 
+
 class Lambda:
+    """A lambda is an annonymous function."""
 
     def __init__(self, body, scope, args):
         self.body = body
@@ -168,7 +187,9 @@ class Lambda:
 
         return fexpr_begin(local_scope, *self.body)
 
+
 class NativeLambda(Lambda):
+    """A lambda that's implemented in Python."""
 
     def __init__(self, body, scope, name):
         self.body = body
@@ -181,12 +202,15 @@ class NativeLambda(Lambda):
     def __call__(self, args):
         return self.body(self.scope, *args)
 
+
 class ScopelessNativeLambda(NativeLambda):
 
     def __call__(self, args):
         return self.body(*args)
 
+
 class Scope:
+    """A scope is the context within which an expression is evaluated."""
 
     def __init__(self, parent):
         self.vars = {}
@@ -236,7 +260,9 @@ class Scope:
 
         return token
 
+
 class GlobalScope(Scope):
+    """The top-level scope, with some built-in functions."""
 
     def __init__(self):
         self.parent = None
