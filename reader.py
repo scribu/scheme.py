@@ -1,10 +1,13 @@
-"""The lexer is the component which converts a source code string into a list of tokens and then to an AST."""
+"""The reader is responsible for converting a source code string into an abstract syntax tree.
+
+This involves lexing, parsing and expansions.
+"""
 import re
 from collections import defaultdict
 
 
 class Symbol:
-    """A symbol is a special token, representing a variable."""
+    """A symbol is a special token, representing a variable name."""
 
     def __init__(self, name):
         self.name = name

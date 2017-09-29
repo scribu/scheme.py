@@ -1,7 +1,7 @@
 """A read-eval-print-loop implementation."""
 from __future__ import print_function
 
-import core, lexer
+import core, reader
 import readline
 
 class REPL:
@@ -43,14 +43,14 @@ class REPL:
                 continue
 
             try:
-                tokens = lexer.tokenize(line)
+                tokens = reader.tokenize(line)
             except Exception as e:
                 print(e)
                 continue
 
             stored_tokens += tokens
 
-            ast, balance = lexer.get_ast(stored_tokens)
+            ast, balance = reader.get_ast(stored_tokens)
 
             if balance > 0:
                 continue
@@ -61,18 +61,18 @@ class REPL:
 
             stored_tokens = []
 
-            ast = lexer.expand_quotes(ast)
-            ast = lexer.expand_define(ast)
+            ast = reader.expand_quotes(ast)
+            ast = reader.expand_define(ast)
 
             for expr in ast:
                 print(self.scope.eval(expr))
 
     def completer(self, input, state):
-        tokens = lexer.tokenize(input)
+        tokens = reader.tokenize(input)
 
         symbol = tokens[-1]
 
-        if not lexer.is_symbol(symbol):
+        if not reader.is_symbol(symbol):
             return None
 
         options = self.get_options(self.scope, symbol.name)

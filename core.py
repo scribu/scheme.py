@@ -4,8 +4,8 @@ from __future__ import print_function
 
 import sys
 import operator
-import lexer
-from lexer import Symbol, is_list, is_symbol, expr_to_str
+import reader
+from reader import Symbol, is_list, is_symbol, expr_to_str
 
 def is_procedure(arg):
     return isinstance(arg, Lambda)
@@ -89,14 +89,14 @@ def proc_eval(scope, expr):
 
 def proc_load(scope, fname):
     """A procedure for loading code from a file."""
-    tokens = lexer.tokenize_file(fname)
-    ast, balance = lexer.get_ast(tokens)
+    tokens = reader.tokenize_file(fname)
+    ast, balance = reader.get_ast(tokens)
 
     if balance != 0:
         raise Exception("Unbalanced parentheses")
 
-    ast = lexer.expand_quotes(ast)
-    ast = lexer.expand_define(ast)
+    ast = reader.expand_quotes(ast)
+    ast = reader.expand_define(ast)
 
     for expr in ast:
         scope.eval(expr)
